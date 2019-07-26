@@ -19,6 +19,7 @@ const CaliperUtils = require('../utils/caliper-utils.js');
 const Logger = CaliperUtils.getLogger('local-client.js');
 const bc   = require('../blockchain.js');
 const RateControl = require('../rate-control/rateControl.js');
+const PrometheusClient = require('../prometheus/prometheus-push-client');
 
 /**
  * Class for Client Interaction
@@ -38,6 +39,11 @@ class CaliperLocalClient {
         this.trimType = 0;
         this.trim = 0;
         this.startTime = 0;
+
+        // Prometheus related
+        this.prometheusClient = new PrometheusClient();
+        this.totalTxCount = 0;
+        this.totalTxDelay = 0;
     }
 
     /**
@@ -47,6 +53,7 @@ class CaliperLocalClient {
         let newNum = this.txNum - this.txLastNum;
         this.txLastNum += newNum;
 
+        // get a copy to work from
         let newResults = this.results.slice(0);
         this.results = [];
         if(newResults.length === 0 && newNum === 0) {
@@ -56,11 +63,32 @@ class CaliperLocalClient {
         let newStats;
         if(newResults.length === 0) {
             newStats = bc.createNullDefaultTxStats();
-        }
-        else {
+        } else {
             newStats = this.blockchain.getDefaultTxStats(newResults, false);
         }
-        process.send({type: 'txUpdated', data: {submitted: newNum, committed: newStats}});
+
+        // Update monitor
+        if (this.prometheusClient.gatewaySet()){
+            // Send to Prometheus push gateway
+            this.totalTxnSubmitted += newNum;
+            this.totalTxnSuccess += newStats.succ;
+            this.totalTxnFailure += newStats.fail;
+            const batchTxCount = newStats.succ + newStats.fail;
+            const batchTPS = (batchTxCount/this.txUpdateTime)*1000;  // txUpdate is in ms
+            const batchLatency = newStats.delay.sum/batchTxCount;
+            const batchRate = (newNum/this.txUpdateTime)*1000;  // txUpdate is in ms
+
+            this.prometheusClient.push('caliper_tps', batchTPS);
+            this.prometheusClient.push('caliper_latency', batchLatency);
+            this.prometheusClient.push('caliper_send_rate', batchRate);
+            this.prometheusClient.push('caliper_txn_submitted', this.totalTxnSubmitted);
+            this.prometheusClient.push('caliper_txn_success', this.totalTxnSuccess);
+            this.prometheusClient.push('caliper_txn_failure', this.totalTxnFailure);
+            this.prometheusClient.push('caliper_txn_pending', (this.txNum - (this.totalTxnSuccess + this.totalTxnFailure)));
+        } else {
+            // client-orchestrator based update
+            process.send({type: 'txUpdated', data: {submitted: newNum, committed: newStats}});
+        }
 
         if (this.resultStats.length === 0) {
             switch (this.trimType) {
@@ -115,6 +143,7 @@ class CaliperLocalClient {
         this.txNum = 0;
         this.txLastNum = 0;
 
+        // TODO: once prometheus is enabled, trim occurs as part of the retrieval query
         // conditionally trim beginning and end results for this test run
         if (msg.trim) {
             if (msg.txDuration) {
@@ -125,6 +154,20 @@ class CaliperLocalClient {
             this.trim = msg.trim;
         } else {
             this.trimType = 0;
+        }
+
+        // Prometheus is specified if msg.pushUrl !== null
+        if (msg.pushUrl !== null) {
+            // - ensure counters reset
+            this.totalTxnSubmitted = 0;
+            this.totalTxnSuccess = 0;
+            this.totalTxnFailure = 0;
+            // - Ensure gateway base URL is set
+            if (!this.prometheusClient.gatewaySet()){
+                this.prometheusClient.setGateway(msg.pushUrl);
+            }
+            // - set target for this round test/round/client
+            this.prometheusClient.configureTarget(msg.label, msg.testRound, msg.clientIdx);
         }
     }
 
@@ -152,21 +195,17 @@ class CaliperLocalClient {
 
     /**
      * Perform test with specified number of transactions
-     * @param {JSON} msg start test message
      * @param {Object} cb callback module
-     * @param {Object} context blockchain context
-     * @return {Promise} promise object
+     * @param {Object} number number of transactions to submit
+     * @param {Object} rateController rate controller object
+     * @async
      */
-    async runFixedNumber(msg, cb, context) {
+    async runFixedNumber(cb, number, rateController) {
         Logger.info('Info: client ' + process.pid +  ' start test runFixedNumber()' + (cb.info ? (':' + cb.info) : ''));
-        let rateControl = new RateControl(msg.rateControl, msg.clientIdx, msg.roundIdx);
-        await rateControl.init(msg);
-
-        await cb.init(this.blockchain, context, msg.args);
         this.startTime = Date.now();
 
         let promises = [];
-        while(this.txNum < msg.numb) {
+        while(this.txNum < number) {
             // If this function calls cb.run() too quickly, micro task queue will be filled with unexecuted promises,
             // and I/O task(s) will get no chance to be execute and fall into starvation, for more detail info please visit:
             // https://snyk.io/blog/nodejs-how-even-quick-async-functions-can-block-the-event-loop-starve-io/
@@ -176,28 +215,22 @@ class CaliperLocalClient {
                     return Promise.resolve();
                 }));
             });
-            await rateControl.applyRateControl(this.startTime, this.txNum, this.results, this.resultStats);
+            await rateController.applyRateControl(this.startTime, this.txNum, this.results, this.resultStats);
         }
 
         await Promise.all(promises);
-        await rateControl.end();
-        return await this.blockchain.releaseContext(context);
+        this.endTime = Date.now();
     }
 
     /**
      * Perform test with specified test duration
-     * @param {JSON} msg start test message
      * @param {Object} cb callback module
-     * @param {Object} context blockchain context
-     * @return {Promise} promise object
+     * @param {Object} duration duration to run for
+     * @param {Object} rateController rate controller object
+     * @async
      */
-    async runDuration(msg, cb, context) {
+    async runDuration(cb, duration, rateController) {
         Logger.info('Info: client ' + process.pid +  ' start test runDuration()' + (cb.info ? (':' + cb.info) : ''));
-        let rateControl = new RateControl(msg.rateControl, msg.clientIdx, msg.roundIdx);
-        await rateControl.init(msg);
-        const duration = msg.txDuration; // duration in seconds
-
-        await cb.init(this.blockchain, context, msg.args);
         this.startTime = Date.now();
 
         let promises = [];
@@ -211,12 +244,11 @@ class CaliperLocalClient {
                     return Promise.resolve();
                 }));
             });
-            await rateControl.applyRateControl(this.startTime, this.txNum, this.results, this.resultStats);
+            await rateController.applyRateControl(this.startTime, this.txNum, this.results, this.resultStats);
         }
 
         await Promise.all(promises);
-        await rateControl.end();
-        return await this.blockchain.releaseContext(context);
+        this.endTime = Date.now();
     }
 
     /**
@@ -234,22 +266,36 @@ class CaliperLocalClient {
 
     /**
      * Perform the test
-     * @param {JSON} msg start test message
+     * @param {JSON} test start test message
+     * message = {
+     *              type: 'test',
+     *              label : label name,
+     *              numb:   total number of simulated txs,
+     *              rateControl: rate controller to use
+     *              trim:   trim options
+     *              args:   user defined arguments,
+     *              cb  :   path of the callback js file,
+     *              config: path of the blockchain config file
+     *              clientIdx = this client index,
+     *              clientargs = clientArgs[clientIdx],
+     *              totalClients = total number of clients,
+     *              pushUrl = the url for the push gateway
+     *            };
      * @return {Promise} promise object
      */
-    async doTest(msg) {
-        Logger.debug('doTest() with:', msg);
-        let cb = require(CaliperUtils.resolvePath(msg.cb, msg.root));
+    async doTest(test) {
+        Logger.debug('doTest() with:', test);
+        let cb = require(CaliperUtils.resolvePath(test.cb, test.root));
 
-        this.beforeTest(msg);
+        this.beforeTest(test);
 
-        let txUpdateTime = cfUtil.get(cfUtil.keys.CoreTxUpdateTime, 1000);
-        Logger.info('txUpdateTime: ' + txUpdateTime);
+        this.txUpdateTime = cfUtil.get(cfUtil.keys.CoreTxUpdateTime, 1000);
+        Logger.info('txUpdateTime: ' + this.txUpdateTime);
         const self = this;
-        let txUpdateInter = setInterval( () => { self.txUpdate();  } , txUpdateTime);
+        let txUpdateInter = setInterval( () => { self.txUpdate();  } , self.txUpdateTime);
 
         try {
-            let context = await this.blockchain.getContext(msg.label, msg.clientargs, msg.clientIdx, msg.txFile);
+            let context = await this.blockchain.getContext(test.label, test.clientargs, test.clientIdx, test.txFile);
             if(typeof context === 'undefined') {
                 context = {
                     engine : {
@@ -263,20 +309,40 @@ class CaliperLocalClient {
                 };
             }
 
-            if (msg.txDuration) {
-                await this.runDuration(msg, cb, context);
+            // Configure
+            let rateController = new RateControl(test.rateControl, test.clientIdx, test.testRound);
+            await rateController.init(test);
+            await cb.init(this.blockchain, context, test.args);
+
+            // Run the test loop
+            if (test.txDuration) {
+                const duration = test.txDuration; // duration in seconds
+                await this.runDuration(cb, duration, rateController);
             } else {
-                await this.runFixedNumber(msg, cb, context);
+                const number = test.numb;
+                await this.runFixedNumber(cb, number, rateController);
             }
 
+            // Clean up
+            await rateController.end();
+            await this.blockchain.releaseContext(context);
             this.clearUpdateInter(txUpdateInter);
             await cb.end();
 
+            // Return the results and time stamps
             if (this.resultStats.length > 0) {
-                return this.resultStats[0];
+                return {
+                    results: this.resultStats[0],
+                    start: this.startTime,
+                    end: this.endTime
+                };
             }
             else {
-                return this.blockchain.createNullDefaultTxStats();
+                return {
+                    results: this.blockchain.createNullDefaultTxStats(),
+                    start: this.startTime,
+                    end: this.endTime
+                };
             }
         } catch (err) {
             this.clearUpdateInter();

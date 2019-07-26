@@ -1696,7 +1696,6 @@ class Fabric extends BlockchainInterface {
         // the exception should propagate up for an invalid channel name, indicating a user callback module error
         let channel = invoker.getChannel(querySettings.channel, true);
 
-
         if (countAsLoad && context.engine) {
             context.engine.submitCallback(1);
         }

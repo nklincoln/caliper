@@ -18,11 +18,10 @@ const Blockchain = require('./blockchain');
 const CaliperUtils = require('./utils/caliper-utils');
 const ClientOrchestrator  = require('./client/client-orchestrator');
 const Config = require('./config/config-util');
-const Monitor = require('./monitor/monitor');
+const MonitorOrchestrator = require('./monitor/monitor-orchestrator');
 const Report = require('./report/report');
-const Test = require('./test/defaultTest');
+const DefaultTest = require('./test-runners/default-test');
 
-const demo = require('./gui/src/demo.js');
 const path = require('path');
 
 const logger = CaliperUtils.getLogger('caliper-flow');
@@ -42,21 +41,28 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
     let successes = 0;
     let failures = 0;
 
+    let configObject = CaliperUtils.parseYaml(absConfigFile);
+    let networkObject = CaliperUtils.parseYaml(absNetworkFile);
+
     logger.info('####### Caliper Test #######');
     const adminClient = new Blockchain(admin);
     const clientOrchestrator  = new ClientOrchestrator(absConfigFile);
-    const monitor = new Monitor(absConfigFile);
-    const report = new Report(monitor);
-    report.createReport(absConfigFile, absNetworkFile, adminClient.gettype());
-    demo.init();
+    const monitorOrchestrator = new MonitorOrchestrator(absConfigFile);
 
-    let configObject = CaliperUtils.parseYaml(absConfigFile);
-    let networkObject = CaliperUtils.parseYaml(absNetworkFile);
+    // Test observer is dynamically loaded, but defaults to local
+    const observerType = (configObject.observer && configObject.observer.type) ? configObject.observer.type : 'local';
+    const TestObserver = require(`./test-observers/${observerType}-observer`);
+    const testObserver = new TestObserver(absConfigFile);
+
+    // Report
+    const report = new Report(monitorOrchestrator);
+    report.createReport(absConfigFile, absNetworkFile, adminClient.gettype());
 
     let skipStart = Config.get(Config.keys.CoreSkipStartScript, false);
     let skipEnd = Config.get(Config.keys.CoreSkipEndScript, false);
 
     try {
+        // Run StartCommand if it exists
         if (networkObject.hasOwnProperty('caliper') && networkObject.caliper.hasOwnProperty('command') && networkObject.caliper.command.hasOwnProperty('start')) {
             if (!networkObject.caliper.command.start.trim()) {
                 throw new Error('Start command is specified but it is empty');
@@ -73,15 +79,14 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
         let clientArgs = await adminClient.prepareClients(numberOfClients);
 
         try {
-            await monitor.start();
-            logger.info('Started monitor successfully');
+            await monitorOrchestrator.startAllMonitors();
+            logger.info('Started monitors successfully');
         } catch (err) {
-            logger.error('Could not start monitor, ' + (err.stack ? err.stack : err));
+            logger.error('Could not start monitors, ' + (err.stack ? err.stack : err));
         }
 
         let testIdx = 0;
-
-        const tester = new Test(clientArgs, absNetworkFile, clientOrchestrator, clientFactory, workspace, report, demo, monitor);
+        const tester = new DefaultTest(clientArgs, absNetworkFile, clientOrchestrator, clientFactory, workspace, report, testObserver, monitorOrchestrator);
         const allTests = configObject.test.rounds;
         for (let test of allTests) {
             ++testIdx;
@@ -92,8 +97,7 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
 
         logger.info('---------- Finished Test ----------\n');
         report.printResultsByRound();
-        monitor.printMaxStats();
-        await monitor.stop();
+        await monitorOrchestrator.stopAllMonitors();
 
         const date = new Date().toISOString().replace(/-/g,'').replace(/:/g,'').substr(0,15);
         const outFile = path.join(process.cwd(), `report-${date}.html`);
@@ -105,7 +109,7 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
         logger.error(`Error: ${err.stack ? err.stack : err}`);
         errorStatus = 1;
     } finally {
-        demo.stopWatch();
+        testObserver.stopWatch();
 
         if (networkObject.hasOwnProperty('caliper') && networkObject.caliper.hasOwnProperty('command') && networkObject.caliper.command.hasOwnProperty('end')) {
             if (!networkObject.caliper.command.end.trim()) {

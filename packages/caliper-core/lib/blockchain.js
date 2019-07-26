@@ -14,6 +14,8 @@
 
 'use strict';
 
+const Logger = require('./utils/caliper-utils').getLogger('blockchain');
+
 /**
  * BlockChain class, define operations to interact with the blockchain system under test
  */
@@ -129,11 +131,11 @@ class Blockchain {
 
     /**
     * Calculate the default transaction statistics
-    * @param {Array} results array of txStatus
+    * @param {Array} resultArray array of txStatus
     * @param {Boolean} detail indicates whether to keep detailed information
     * @return {JSON} txStatistics JSON object
     */
-    getDefaultTxStats(results, detail) {
+    getDefaultTxStats(resultArray, detail) {
         let succ = 0, fail = 0, delay = 0;
         let minFinal, maxFinal, minCreate, maxCreate;
         let maxLastFinal;
@@ -142,8 +144,8 @@ class Blockchain {
         let sTPTotal = 0;
         let sTTotal = 0;
         let invokeTotal = 0;
-        for(let i = 0 ; i < results.length ; i++) {
-            let stat   = results[i];
+        for(let i = 0 ; i < resultArray.length ; i++) {
+            let stat   = resultArray[i];
             sTPTotal = sTPTotal + stat.Get('sTP');
             sTTotal = sTTotal + stat.Get('sT');
             invokeTotal += stat.Get('invokeLatency');
@@ -216,7 +218,7 @@ class Blockchain {
             'sTPTotal': sTPTotal,
             'sTTotal': sTTotal,
             'invokeTotal': invokeTotal,
-            'length': results.length
+            'length': resultArray.length
         };
         return stats;
     }
@@ -224,15 +226,15 @@ class Blockchain {
     /**
      * merge an array of default 'txStatistics', the result is in first object of the array
      * Note even failed the first object of the array may still be changed
-     * @param {Array} results txStatistics array
+     * @param {Array} resultArray txStatistics array
      * @return {Number} 0 if failed; otherwise 1
      */
-    static mergeDefaultTxStats(results) {
+    static mergeDefaultTxStats(resultArray) {
         try{
             // skip invalid result
             let skip = 0;
-            for(let i = 0 ; i < results.length ; i++) {
-                let result = results[i];
+            for(let i = 0 ; i < resultArray.length ; i++) {
+                let result = resultArray[i];
 
                 if(!result.hasOwnProperty('succ') || !result.hasOwnProperty('fail') || (result.succ + result.fail) === 0) {
                     skip++;
@@ -243,16 +245,16 @@ class Blockchain {
             }
 
             if(skip > 0) {
-                results.splice(0, skip);
+                resultArray.splice(0, skip);
             }
 
-            if(results.length === 0) {
+            if(resultArray.length === 0) {
                 return 0;
             }
 
-            let r = results[0];
-            for(let i = 1 ; i < results.length ; i++) {
-                let v = results[i];
+            let r = resultArray[0];
+            for(let i = 1 ; i < resultArray.length ; i++) {
+                let v = resultArray[i];
                 if(!v.hasOwnProperty('succ') || !v.hasOwnProperty('fail') || (v.succ + v.fail) === 0) {
                     continue;
                 }
@@ -292,7 +294,7 @@ class Blockchain {
             return 1;
         }
         catch(err) {
-            //throw err;
+            Logger.error(err);
             return 0;
         }
     }

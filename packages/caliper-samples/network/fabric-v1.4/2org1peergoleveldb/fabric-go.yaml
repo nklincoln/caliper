@@ -20,7 +20,7 @@ caliper:
   blockchain: fabric
   command:
     start: docker-compose -f network/fabric-v1.4/2org1peergoleveldb/docker-compose.yaml up -d;sleep 3s
-    end: docker-compose -f network/fabric-v1.4/2org1peergoleveldb/docker-compose.yaml down;(test -z \"$(docker ps -aq)\") || docker rm $(docker ps -aq);(test -z \"$(docker images dev* -q)\") || docker rmi $(docker images dev* -q);rm -rf /tmp/hfc-*
+    end: docker-compose -f network/fabric-v1.4/2org1peergoleveldb/docker-compose.yaml down;(test -z \"$(docker ps -aq)\") || docker rm $(docker ps -aq);
 
 info:
   Version: 1.4.0
@@ -73,18 +73,18 @@ channels:
       language: golang
       path: contract/fabric/marbles/go
       metadataPath: src/contract/fabric/marbles/go/metadata
-    - id: drm
-      version: v0
-      language: golang
-      path: contract/fabric/drm
-    - id: simple
-      version: v0
-      language: golang
-      path: contract/fabric/simple/go
-    - id: smallbank
-      version: v0
-      language: golang
-      path: contract/fabric/smallbank
+    # - id: drm
+    #   version: v0
+    #   language: golang
+    #   path: contract/fabric/drm
+    # - id: simple
+    #   version: v0
+    #   language: golang
+    #   path: contract/fabric/simple/go
+    # - id: smallbank
+    #   version: v0
+    #   language: golang
+    #   path: contract/fabric/smallbank
 
 organizations:
   Org1:
