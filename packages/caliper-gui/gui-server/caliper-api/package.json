@@ -1,0 +1,15 @@
+{
+  "name": "caliper-api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason You",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
