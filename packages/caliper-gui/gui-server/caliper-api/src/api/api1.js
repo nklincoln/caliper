@@ -1,10 +1,13 @@
 'use strict';
 
+const fs = require("fs");
+const shell = require("shelljs");
 const express = require("express");
 const api = express.Router();
 // File upload package setting
-const networkConfigFile = "../../data/config/network-config-file.yaml";
-const testConfigFile = "../../data/config/test-config-file.yaml";
+const configPath = "data/config";		// relative to the app.js in ./caliper-api
+const networkConfigFile = "data/config/network-config-file.yaml";
+const testConfigFile = "data/config/test-config-file.yaml";
 const multer = require("multer");		// for file reading
 
 // caliper-core dependencies
@@ -20,7 +23,8 @@ const {
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, 'data/config');
+		checkPath(configPath);		// make sure that path exists
+		cb(null, configPath);
 	},
 	filename: (req, file, cb) => {
 		// const filename = file.fieldname + '-' + Date.now();
@@ -93,11 +97,33 @@ const publishTestConfig = getPublish('test-config-file');
 	});
 })
 
-// Start the Caliper test by calling dependencies in caliper-core
-const startTest = function(obj) {
+// api.get
 
+// Start the Caliper test by calling dependencies in caliper-core
+// The main purpose of this function is to get (real-time, not even necessary at this time)
+// test results from the test! (JSON)
+const startTest = function(obj) {
+	let errorStatus = 0;
+    let successes = 0;
+    let failures = 0;
+
+    let configObject = CaliperUtils.parseYaml(testConfigFile);
+	let networkObject = CaliperUtils.parseYaml(networkConfigFile);
+	
+	console.log(JSON.stringify(configObject, false, 2));
 }
 
+// Check the existence of a path, and create if it doesn't exists
+const checkPath = function(path) {
+	if (!fs.existsSync(path)) {
+		shell.mkdir('-p', path);	// recursively create directory in path
+	}
+}
+
+// TODO: remove the configuration files after closing/finishing
+const clean = function(obj) {
+
+}
 
 
 module.exports = api;
