@@ -45,4 +45,3 @@ _site/
 
 # caliper-gui local data and temp tests
 packages/caliper-gui/gui-server/caliper-api/data/
-packages/caliper-gui/gui-server/caliper-api/test/temp
