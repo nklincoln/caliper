@@ -42,3 +42,7 @@ _site/
 
 # pm2 files
 **/.pm2/
+
+# caliper-gui local data and temp tests
+packages/caliper-gui/gui-server/caliper-api/data/
+packages/caliper-gui/gui-server/caliper-api/test/temp

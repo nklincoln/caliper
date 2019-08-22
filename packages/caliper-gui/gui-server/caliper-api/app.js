@@ -1,21 +1,13 @@
 var express = require("express");
-
+var apiV1 = require("./src/api/api1.js");
+var apiV2 = require("./src/api/api2.js");
 var app = express();
 
-app.get("/random/:min/:max", (req, res) => {
-    var min = parseInt(req.params.min);
-    var max = parseInt(req.params.max);
+const PORT = 3001;
 
-    if (isNaN(min) || isNaN(max)) {
-        res.status(400);
-        res.json({error: "Bad request"});
-        return;
-    }
+app.use("/v1", apiV1);
+// app.use("/v2", apiV2);
 
-    var result = Math.round((Math.random() * (max - min)) + min);
-    res.json({ result: result });
-});
-
-app.listen(3000, () => {
-    console.log("App started on port 3000");
+app.listen(PORT, function() {
+	console.log(`Caliper-API started on port ${PORT}`);
 });
