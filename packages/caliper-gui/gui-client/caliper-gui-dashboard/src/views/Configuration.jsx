@@ -32,6 +32,7 @@ import React from "react";
 
 // reactstrap components
 import {
+  Button,
   Row,
   Col
 } from "reactstrap";
@@ -41,18 +42,75 @@ import TestConfigurationForm from "../components/Forms/TestConfigurationForm";
 import FabricConfigurationForm from "../components/Forms/FabricConfigurationForm";
 
 class Configuration extends React.Component {
+  constructor(props) {
+    super(props);
+    this.testConfigElement = React.createRef();
+    this.networkConfigElment = React.createRef();
+  }
+
+  state = {
+    testConfigSet: false,
+    networkConfigSet: false,
+  }
+
+  setTestConfig = (bool) => {
+    this.setState({ testConfigSet: bool });
+  }
+
+  setNetworkConfig = (bool) => {
+    this.setState({ networkConfigSet: bool });
+  }
+
+  disableTestButton = () => {
+    console.log("[DEBUG] chile file:", this.testConfigElement.current.state.file);
+    // clear the config files in test and network config
+    this.testConfigElement.current.removeFile();
+    this.networkConfigElment.current.removeFile();
+    
+    this.setState({
+      testConfigSet: false,
+      networkConfigSet: false,
+    })
+  }
+
+  startTest = () => {
+    if (!this.state.testConfigSet || !this.state.networkConfigSet) {
+      return;
+    }
+
+    // TODO: when the start test button is clicked, run the test by calling the API
+    // And then get the test result back to here
+    // Then jump to the output page, which will get data from server/DB by API call 
+    // OR (optinoal) if you can get the data to be updated in seconds with server running
+    // caliper core, you can using Socket.IO to get real time data.
+    
+  }
+
   render() {
     return (
       <>
         <div className="content">
+          <div className="text-center">
+            <Button color="warning" style={{width:"300px"}} disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>Start Test</Button>
+            <Button color="danger" style={{width:"100px"}} onClick={this.disableTestButton}>Reset</Button>
+            <p className="card-category">
+              Test can be started once both "test" and "network" config files are uploaded
+            </p>
+          </div>
+          <div className="text-center">
+            <Button color="primary" style={{width:"300px"}} onClick={null}>Using Sample Config Files</Button>
+            <p className="card-category">
+              Testing With Sample Test & Network Configuration Files
+            </p>
+          </div>
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-              <TestConfigurationForm />
+              <TestConfigurationForm action={this.setTestConfig} ref={this.testConfigElement} />
             </Col>
           </Row>
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-                <FabricConfigurationForm />
+              <FabricConfigurationForm action={this.setNetworkConfig} ref={this.networkConfigElment} />
             </Col>
           </Row>
         </div>
