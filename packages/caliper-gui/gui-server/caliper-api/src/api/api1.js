@@ -1,14 +1,30 @@
 'use strict';
 
-const fs = require("fs");
-const shell = require("shelljs");
-const express = require("express");
+const fs = require('fs');
+const shell = require('shelljs');
+const express = require('express');
 const api = express.Router();
+const multer = require('multer');		// for file reading
+const mime = require('mime-types');
+
+// MongoDB dependencies
+const mongo = require('mongodb').MongoClient;
+const mongoUrl = 'mongodb://localhost:27017';
+
+// test db
+mongo.connect(mongoUrl, (err, client) => {
+	if (err) {
+		console.log(err);
+		return;
+	} else {
+		console.log("We are connected");
+	}
+})
+
 // File upload package setting
-const configPath = "data/config/";		// relative to the app.js in ./caliper-api
-let networkConfigFile = "";
-let testConfigFile = "";
-const multer = require("multer");		// for file reading
+const configPath = 'data/config/';		// relative to the app.js in ./caliper-api
+let networkConfigFile = '';
+let testConfigFile = '';
 
 // caliper-core dependencies
 const {
@@ -42,13 +58,15 @@ const getPublish = function(configType) {
 	let upload = multer({
 		storage: storage,
 		fileFilter: (req, file, cb) => {
-			if (!['text/vnd.yaml', 'text/yaml', 'text/x-yaml', 'application/x-yaml'].includes(file.mimetype)) {
+			console.log('[DEBUG fileFilter] file:', file);		// debug
+			// Check the mime type of the received file first
+			let mimeType = mime.lookup(file.originalname);
+			if (!['text/vnd.yaml', 'text/yaml', 'text/x-yaml', 'application/x-yaml'].includes(mimeType)) {
 				return cb({
 					statusCode: 400,
 					error: 'Only YAML files are allowed',
 				})
 			}
-
 			return cb(null, true);
 		}
 	 }).single(configType);
@@ -56,8 +74,9 @@ const getPublish = function(configType) {
 	let publish = (req, res, callback) => {
 		upload(req, res, (err) => {
 			if (err instanceof multer.MulterError) {
-				console.error('[Multer ERROR] ' + err);
+				console.error('[Multer ERR]', err);
 			} else if (err) {
+				console.error('[SERVER ERR]', err)
 				callback({ statusCode: 500, error: err });
 		   } else {
 			   // Successfully uploaded file
@@ -85,13 +104,9 @@ const publishTestConfig = getPublish('test-config-file');
 		 } else {
 			 // TODO: store the config file in DB
 			 //
-			
-			// CORS setup for different domain name of API and GUI
-			// res.header('Access-Control-Allow-Origin', '*');
-			// res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-			  
+
 			// set the config file path so the test can start
-			networkConfigFile = "data/config/network-config-file.yaml";
+			networkConfigFile = 'data/config/network-config-file.yaml';
 			res.status(statusCode).json({ file });
 		 }
 	 });
@@ -105,12 +120,8 @@ const publishTestConfig = getPublish('test-config-file');
 			// TODO: store the config file in DB
 			//
 
-			// CORS setup for different domain name of API and GUI
-			// res.header('Access-Control-Allow-Origin', '*');
-			// res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-			  
 			// set the config file path so the test can start
-			testConfigFile = "data/config/test-config-file.yaml";
+			testConfigFile = 'data/config/test-config-file.yaml';
 			res.status(statusCode).json({ file });
 		}
 	});
@@ -122,9 +133,9 @@ api.post('/run-test', (req, res, next) => {
 	// because this is just a one time test right now!
 	let result = startTest();
 	if (result) {
-		res.end("Test finished!");
+		res.end('Test finished!');
 	} else {
-		res.end("Empty result! Something is wrong!")
+		res.end('Empty result! Something is wrong!')
 	}
 })
 
@@ -132,11 +143,17 @@ api.post('/run-test', (req, res, next) => {
 // The main purpose of this function is to get (real-time, not even necessary at this time)
 // test results from the test! (JSON)
 const startTest = function() {
-	if (networkConfigFile === "" || testConfigFile === "") {
-		console.log("[ERROR] The config files are not uploaded, cannot start test!");
+	if (networkConfigFile === '' || testConfigFile === '') {
+		console.log('[DEBUG] NetworkConfigFile:------------\n', networkConfigFile);
+		console.log('[DEBUG] testConfigFile:------------\n', testConfigFile);
+		console.log('[ERROR] The config files are not uploaded, cannot start test!');
 		return null;
 		// TODO: send status code to the browser so it can response to user
 	}
+
+	let result = {
+		success: true,
+	};		// the result JSON object return to client and DB
 
 	let errorStatus = 0;
     let successes = 0;
@@ -145,7 +162,9 @@ const startTest = function() {
     let configObject = CaliperUtils.parseYaml(testConfigFile);
 	let networkObject = CaliperUtils.parseYaml(networkConfigFile);
 	
-	console.log(JSON.stringify(configObject, false, 2));
+	console.log('[DEBUG] configObject------------\n', JSON.stringify(configObject, false, 2));
+	console.log('[DEBUG] networkObject------------\n', JSON.stringify(networkObject, false, 2));
+	return result;
 }
 
 // Check the existence of a path, and create if it doesn't exists
@@ -161,8 +180,8 @@ const createPath = function(path) {
 // TODO: remove the configuration files after closing/finishing
 const clean = function(obj) {
 	// Let the test function know that no current config files provided
-	networkConfigFile = "";
-	testConfigFile = "";
+	networkConfigFile = '';
+	testConfigFile = '';
 	// Delete to local temp config files
 	
 }
