@@ -42,16 +42,14 @@ const getPublish = function(configType) {
 	let upload = multer({
 		storage: storage,
 		fileFilter: (req, file, cb) => {
-			if (file.mimetype === 'application/octet-stream') {
-				return cb(null, false);		// why is the file an application/octet-stream
-			}
 			if (!['text/vnd.yaml', 'text/yaml', 'text/x-yaml', 'application/x-yaml'].includes(file.mimetype)) {
 				return cb({
 					statusCode: 400,
 					error: 'Only YAML files are allowed',
 				})
 			}
-			cb(null, true);
+
+			return cb(null, true);
 		}
 	 }).single(configType);
 
