@@ -32,12 +32,6 @@ import React from "react";
 
 // reactstrap components
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
-  Table,
   Row,
   Col
 } from "reactstrap";
@@ -51,58 +45,14 @@ class Configuration extends React.Component {
     return (
       <>
         <div className="content">
-
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-              <Card>
-
-                <CardHeader className="text-center">
-                  <CardTitle tag="h4">Test Configuration</CardTitle>
-                  <p className="card-category">
-                    You can generate, save, and export configuration file in here.
-                  </p>
-                </CardHeader>
-
-                <CardBody>
-                  <div className="text-center">
-                    <Button color="primary" style={{width:"300px"}}>Default Configuration</Button>
-                    <Button color="danger" style={{width:"300px"}}>Clear Form</Button>
-                  </div>
-
-                  <TestConfigurationForm />
-
-                  <div className="text-center">
-                    <Button color="success" style={{width:"300px"}}>Generate</Button>
-                  </div>
-                </CardBody>
-
-              </Card>
+              <TestConfigurationForm />
             </Col>
           </Row>
-
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-              <Card>
-                <CardHeader className="text-center">
-                  <CardTitle tag="h4">Fabric Configuration</CardTitle>
-                  <p className="">
-                    Using this form to generate Hyperledger Fabric Configuration File.
-                  </p>
-                </CardHeader>
-
-                <CardBody>
-                  <div className="text-center">
-                    <Button color="primary" style={{width:"300px"}}>Default Configuration</Button>
-                    <Button color="danger" style={{width:"300px"}}>Clear Form</Button>
-                  </div>
-
-                  <FabricConfigurationForm />
-
-                  <div className="text-center">
-                    <Button color="success" style={{width:"300px"}}>Generate</Button>
-                  </div>
-                </CardBody>
-              </Card>
+                <FabricConfigurationForm />
             </Col>
           </Row>
         </div>
