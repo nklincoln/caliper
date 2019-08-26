@@ -32,6 +32,7 @@ import React from "react";
 
 // reactstrap components
 import {
+  Alert,
   Button,
   Row,
   Col
@@ -40,6 +41,9 @@ import {
 // import configuration forms
 import TestConfigurationForm from "../components/Forms/TestConfigurationForm";
 import FabricConfigurationForm from "../components/Forms/FabricConfigurationForm";
+
+import axios from "axios";
+let testApi = "http://localhost:3001/v1/run-test/";
 
 class Configuration extends React.Component {
   constructor(props) {
@@ -51,6 +55,9 @@ class Configuration extends React.Component {
   state = {
     testConfigSet: false,
     networkConfigSet: false,
+    useSample: false,
+    testStarted: false,
+    testResult: null,
   }
 
   setTestConfig = (bool) => {
@@ -61,7 +68,21 @@ class Configuration extends React.Component {
     this.setState({ networkConfigSet: bool });
   }
 
-  disableTestButton = () => {
+  // Tell the server to use sample config files
+  handleUseSample = () => {
+    let useSample = true;
+
+    this.setState({
+      testConfigSet: true,
+      networkConfigSet: true,
+      useSample: useSample,
+    })
+
+    this.testConfigElement.current.setUploaded(true);
+    this.networkConfigElment.current.setUploaded(true);
+  }
+
+  resetButton = () => {
     console.log("[DEBUG] chile file:", this.testConfigElement.current.state.file);
     // clear the config files in test and network config
     this.testConfigElement.current.removeFile();
@@ -70,20 +91,48 @@ class Configuration extends React.Component {
     this.setState({
       testConfigSet: false,
       networkConfigSet: false,
+      useSample: false,
     })
   }
 
-  startTest = () => {
-    if (!this.state.testConfigSet || !this.state.networkConfigSet) {
-      return;
+  // send api GET request to let the server to use sample config file test
+  startTest = async () => {
+    if (!this.state.useSample && (!this.state.testConfigSet || !this.state.networkConfigSet)) {
+      console.error("You Didn't Upload All The Required Config Files!")
+      return null;
     }
+
+    this.setState({ 
+      testStarted: true,  // prevent user double click on the test.
+      testResult: null,
+    });
+
+    let result = null;
+    let api = testApi + (this.state.useSample ? "true" : "false");
+    
+    console.log("[DEBUG] api:", api);
+
+    await axios.get(api)
+    .then((res) => {
+      result = { ...result, res: res };
+      console.log(result);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+    
 
     // TODO: when the start test button is clicked, run the test by calling the API
     // And then get the test result back to here
     // Then jump to the output page, which will get data from server/DB by API call 
     // OR (optinoal) if you can get the data to be updated in seconds with server running
     // caliper core, you can using Socket.IO to get real time data.
-    
+    this.setState({
+      testStarted: false,
+      testResult: result,
+    });
+
+    console.log("[DEBUG] ****** TEST FINISHED ********\n",this.state.testResult, this.state.testStarted);
   }
 
   render() {
@@ -91,17 +140,25 @@ class Configuration extends React.Component {
       <>
         <div className="content">
           <div className="text-center">
-            <Button color="warning" style={{width:"300px"}} disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>Start Test</Button>
-            <Button color="danger" style={{width:"100px"}} onClick={this.disableTestButton}>Reset</Button>
+            {
+              this.state.testStarted ?
+              <Button color="success" style={{width:"300px"}} disabled>Test Started</Button>
+              :
+              <Button color="warning" style={{width:"300px"}} onClick={this.startTest} disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>Start Test</Button>
+            }
+
+            
+            <Button color="danger" style={{width:"100px"}} onClick={this.resetButton}>Reset</Button>
             <p className="card-category">
               Test can be started once both "test" and "network" config files are uploaded
             </p>
           </div>
           <div className="text-center">
-            <Button color="primary" style={{width:"300px"}} onClick={null}>Using Sample Config Files</Button>
+            <Button outline color={this.state.useSample ? "primary" : "primary"} style={{width:"300px"}} onClick={this.handleUseSample}>Using Sample Config Files</Button>
             <p className="card-category">
               Testing With Sample Test & Network Configuration Files
             </p>
+            <Alert color="warning" isOpen={this.state.useSample}><b>Sample Config Files</b> Uploaded!</Alert>
           </div>
           <Row>
             <Col className="ml-auto mr-auto" md="10">

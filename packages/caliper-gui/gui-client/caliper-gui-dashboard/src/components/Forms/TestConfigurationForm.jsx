@@ -18,9 +18,8 @@ import {
 } from "reactstrap";
 // for API file POST
 import axios from "axios";
+let api = "http://localhost:3001/v1/test-config";
 const mime = require("mime-types");
-
-const sampleConfigFile = "../../data/config/sample/sample-test-config.yaml";
 
 export default class TestConfigurationForm extends React.Component {
 
@@ -31,6 +30,10 @@ export default class TestConfigurationForm extends React.Component {
   }
 
   handleFile = (event) => {
+    if (this.state.uploaded) {
+      // no need to add file if already uploaded
+      return;
+    }
     let file = event.target.files[0];
     let mimeType = mime.lookup(file.name);
     console.log("[DEBUG FILE]", file);
@@ -52,7 +55,6 @@ export default class TestConfigurationForm extends React.Component {
       return;
     }
 
-    let api = "http://localhost:3001/v1/test-config";
     let file = this.state.file;
     let formData = new FormData();
     formData.append("test-config-file", file);
@@ -76,6 +78,12 @@ export default class TestConfigurationForm extends React.Component {
     .catch((err) => {
       console.log("[axios ERR]", err);
     });
+  }
+
+  setUploaded = (bool) => {
+    this.setState({
+      uploaded: bool,
+    })
   }
 
   removeFile = () => {
@@ -128,12 +136,12 @@ export default class TestConfigurationForm extends React.Component {
                 {
                   !this.state.uploaded
                   ?
-                  <Button color="success" style={{width:"300px"}} onClick={this.handleUpload}>
+                  <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
                     Upload Test Config File
                   </Button>
                   :
-                  <Alert color="success">
-                    Test Config File Uploaded!
+                  <Alert color="primary">
+                    Test Config File Uploaded! Click on <b>Start Test</b> Above To Start Test!
                     <hr />
                     Press <b>RESET</b> to replace with different config files.
                   </Alert>
