@@ -25,7 +25,6 @@
     There are currently 21 pattern variants available. When using the
     generate method (bellow) patterns will be 'randomly' assigned.
 */
-import * as pattern from 'patternomaly';    // For pattern generation
 
 export const myData = {
     labels: ["2019-08-02T08:34:01", "2019-08-02T08:34:02", "2019-08-02T08:34:03", "2019-08-02T08:34:04", "2019-08-02T08:34:05", "2019-08-02T08:34:10", "2019-08-02T08:34:12", "2019-08-02T08:34:15", "2019-08-02T08:34:18", "2019-08-02T08:34:40", "2019-08-02T08:34:50", "2019-08-02T08:35:01"],
