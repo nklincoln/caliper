@@ -30,10 +30,10 @@ Copyright (c) 2019 Jason You
 
 import Dashboard from "views/Dashboard.jsx";
 // import Notifications from "views/Notifications.jsx";
-import Icons from "views/Icons.jsx";
+// import Icons from "views/Icons.jsx";
 import Documentation from "views/Documentation.jsx";
 import History from "views/History.jsx";
-import NetworkGraph from "views/NetworkGraph.jsx";
+// import NetworkGraph from "views/NetworkGraph.jsx";
 import Configuration from "views/Configuration.jsx";
 
 var routes = [
@@ -44,13 +44,13 @@ var routes = [
     component: Dashboard,
     layout: "/admin"
   },
-  {
-    path: "/network-graph",
-    name: "Network Graph",
-    icon: "nc-icon nc-vector",
-    component: NetworkGraph,
-    layout: "/admin"
-  },
+  // {
+  //   path: "/network-graph",
+  //   name: "Network Graph",
+  //   icon: "nc-icon nc-vector",
+  //   component: NetworkGraph,
+  //   layout: "/admin"
+  // },
   // {
   //   path: "/notifications",
   //   name: "Notifications",

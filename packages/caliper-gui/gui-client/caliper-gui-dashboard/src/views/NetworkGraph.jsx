@@ -28,6 +28,8 @@ Copyright (c) 2019 Jason You
 
 */
 
+// TODO: Finish The Network Graph Functionality By Extracting Network Information From Caliper
+
 import React from "react";
 import { Graph } from 'react-d3-graph';  // blockchain graph visualization
 
@@ -125,46 +127,46 @@ const myConfig = {
   }
 }
 
-// graph event callbacks
-const onClickGraph = function() {
-  window.alert(`Clicked the graph background`);
-};
+// // graph event callbacks
+// const onClickGraph = function() {
+//   window.alert(`Clicked the graph background`);
+// };
 
-const onClickNode = function(nodeId) {
-  window.alert(`Clicked node ${nodeId}`);
-};
+// const onClickNode = function(nodeId) {
+//   window.alert(`Clicked node ${nodeId}`);
+// };
 
-const onDoubleClickNode = function(nodeId) {
-  window.alert(`Double clicked node ${nodeId}`);
-};
+// const onDoubleClickNode = function(nodeId) {
+//   window.alert(`Double clicked node ${nodeId}`);
+// };
 
-const onRightClickNode = function(event, nodeId) {
-  window.alert(`Right clicked node ${nodeId}`);
-};
+// const onRightClickNode = function(event, nodeId) {
+//   window.alert(`Right clicked node ${nodeId}`);
+// };
 
-const onMouseOverNode = function(nodeId) {
-  window.alert(`Mouse over node ${nodeId}`);
-};
+// const onMouseOverNode = function(nodeId) {
+//   window.alert(`Mouse over node ${nodeId}`);
+// };
 
-const onMouseOutNode = function(nodeId) {
-  window.alert(`Mouse out node ${nodeId}`);
-};
+// const onMouseOutNode = function(nodeId) {
+//   window.alert(`Mouse out node ${nodeId}`);
+// };
 
-const onClickLink = function(source, target) {
-  window.alert(`Clicked link between ${source} and ${target}`);
-};
+// const onClickLink = function(source, target) {
+//   window.alert(`Clicked link between ${source} and ${target}`);
+// };
 
-const onRightClickLink = function(event, source, target) {
-  window.alert(`Right clicked link between ${source} and ${target}`);
-};
+// const onRightClickLink = function(event, source, target) {
+//   window.alert(`Right clicked link between ${source} and ${target}`);
+// };
 
-const onMouseOverLink = function(source, target) {
-  window.alert(`Mouse over in link between ${source} and ${target}`);
-};
+// const onMouseOverLink = function(source, target) {
+//   window.alert(`Mouse over in link between ${source} and ${target}`);
+// };
 
-const onMouseOutLink = function(source, target) {
-  window.alert(`Mouse out link between ${source} and ${target}`);
-};
+// const onMouseOutLink = function(source, target) {
+//   window.alert(`Mouse out link between ${source} and ${target}`);
+// };
 
 // Graph visualization config end here.-----
 

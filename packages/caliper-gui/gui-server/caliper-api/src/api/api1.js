@@ -103,6 +103,7 @@ const getPublish = function(configType) {
 				callback({ statusCode: 500, error: err });
 		   } else {
 			   // Successfully uploaded file
+				console.log('[DEBUG]PPPPUBLISH+++++++++++++', req.body);
 
 			   //TODO: save the file to DB in YAML/JSON format
 
@@ -111,7 +112,7 @@ const getPublish = function(configType) {
 			   callback({ statusCode: 200, error: null, file: req.file });
 		   }
 		})
-	}
+	} 
 	
 	return publish;
 }
@@ -128,12 +129,20 @@ const publishTestConfig = getPublish('test-config-file');
 			 // TODO: store the config file in DB
 			 //
 
-			// set the config file path so the test can start
+			console.log('[DEBUG] network-config req.body:', req.body);
+			
+			// Config file is saved automatically by multer
 			networkConfigFile = 'data/config/network-config-file.yaml';
 			res.status(statusCode).json({ file });
 		 }
 	 });
  })
+
+// Handle form input from GUI
+api.post('/config-form', (req, res, next) => {
+	console.log('[DEBUG] /config-form req.body:', req.body);
+	res.json(req.body);
+})
 
  api.post('/test-config', (req, res, next) => {
 	publishTestConfig(req, res, ({statusCode, error, file}) => {
@@ -169,10 +178,6 @@ api.get('/run-test/:useSample', async (req, res, next) => {
 // The main purpose of this function is to get (real-time, not even necessary at this time)
 // test results from the test! (JSON)
 const startTest = async function(useSample) {
-
-	// TODO: revent user from double testing
-	// (if the test started TEST_START===true, then must disconnct/RESET first before the next START_TEST)
-	// Maybe just connect everything to an API.
 
 	if (useSample) {
 		testConfigFile = sampleTestConfigPath;

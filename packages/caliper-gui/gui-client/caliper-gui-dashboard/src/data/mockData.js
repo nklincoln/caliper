@@ -54,14 +54,6 @@ export const myData = {
     ]
 };
 
-// For pattern generation
-function fillArray(value, len) {
-    var arr = [];
-    for (var i = 0; i < len; i++) {
-      arr.push(value);
-    }
-    return arr;
-  }
 
 export const barData = {
     labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -70,8 +62,8 @@ export const barData = {
             label: 'Fast',
             fill: false,
             lineTension: 0.5,
-            backgroundColor: pattern.draw("dot", "rgba(107, 208, 152, 0.7)"),
-            hoverBackgroundColor: pattern.draw("dot", "rgba(107, 208, 152, 1)"),
+            backgroundColor: 'rgba(107, 208, 152, 0.7)',
+            hoverBackgroundColor: 'rgba(107, 208, 152, 1)',
             borderColor: 'rgba(255, 255, 255, 1)',
             borderCapStyle: 'butt',
             borderDash: [],
@@ -92,8 +84,8 @@ export const barData = {
             label: 'Normal',
             fill: false,
             lineTension: 0.5,
-            backgroundColor: pattern.draw("triangle", "rgba(255, 206, 86, 0.7)"),
-            hoverBackgroundColor: pattern.draw("triangle", "rgba(255, 206, 86, 1)"),
+            backgroundColor: 'rgba(255, 206, 86, 0.7)',
+            hoverBackgroundColor: 'rgba(255, 206, 86, 1)',
             borderColor: 'rgba(255, 255, 255, 1)',
             borderCapStyle: 'butt',
             borderDash: [],
@@ -114,8 +106,8 @@ export const barData = {
             label: 'Slow',
             fill: false,
             lineTension: 0.5,
-            backgroundColor: pattern.draw("cross", "rgba(255, 99, 132, 0.7)"),
-            hoverBackgroundColor: pattern.draw("cross", "rgba(255, 99, 132, 1)"),
+            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+            hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
             borderColor: 'rgba(255, 255, 255, 1)',
             borderCapStyle: 'butt',
             borderDash: [],
@@ -145,14 +137,14 @@ export const doughnutData = {
 	datasets: [{
         data: [20, 500, 100],
 		backgroundColor: [
-            pattern.draw("cross", "rgba(255, 99, 132, 0.7)"),
-            pattern.draw("dot", "rgba(107, 208, 152, 0.7)"),
-            pattern.draw("triangle", "rgba(255, 206, 86, 0.7)"),
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(107, 208, 152, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
         ],      
 		hoverBackgroundColor: [
-            pattern.draw("cross", "rgba(255, 99, 132, 1)"),
-            pattern.draw("dot", "rgba(107, 208, 152, 1)"),
-            pattern.draw("triangle", "rgba(255, 206, 86, 1)"),
+            'rgba(255, 99, 132, 1)',
+            'rgba(107, 208, 152, 1)',
+            'rgba(255, 206, 86, 1)',
         ]
     }]
 };

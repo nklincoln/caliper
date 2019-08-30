@@ -103,10 +103,11 @@ export default class TestConfigurationForm extends React.Component {
       <>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle tag="h4">Test Configuration</CardTitle>
+            <CardTitle tag="h4">Test Configuration (<i>Only .yaml File</i>)</CardTitle>
             <p className="card-category">Upload Your Own Hyperledger Network Configuration File.</p>
+            <p className="card-category text-primary">You can easily <b>generate new test config file with the form below</b> too!</p>
             <hr />
-            <p className="card-category">Or Click The <b>Using Sample Config File</b> Botton Above.</p>
+            <p className="card-category">Or Click The <b>Using Sample Config File</b> Button Above.</p>
           </CardHeader>
           <CardBody>
 
@@ -137,7 +138,7 @@ export default class TestConfigurationForm extends React.Component {
                   !this.state.uploaded
                   ?
                   <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
-                    Upload Test Config File
+                    Upload
                   </Button>
                   :
                   <Alert color="primary">

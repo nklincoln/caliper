@@ -14,12 +14,14 @@ import {
   CardBody, 
   Button, 
   CardHeader, 
-  CardTitle
+  CardTitle,
+  Input,
 } from "reactstrap";
 // for API file POST
 import axios from "axios";
 let api = "http://localhost:3001/v1/network-config";
 const mime = require("mime-types");
+const path = require("path");
 
 
 export default class FabricConfigurationForm extends React.Component {
@@ -28,6 +30,9 @@ export default class FabricConfigurationForm extends React.Component {
     file: null,
     uploaded: false,
     wrongMimeType: false,
+    badInput: false,
+    form_workspace: "",
+    errorMessage: "",
   }
 
   handleFile = (event) => {
@@ -50,20 +55,44 @@ export default class FabricConfigurationForm extends React.Component {
     event.target.value = "";  // so same file selection can still trigger onChange
   }
 
+  // Handle the input changes
+  handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    let err = "";
+
+    // handle abs. path workspace input
+    if (name === "form_workspace" && !path.isAbsolute(value)) {
+      err = <b className="text-danger">Must be absolute path to the Blockchain network workspace! (e.g. /Workspace/Absolute/Path)</b>;
+    }
+
+    this.setState({ errorMessage: err });
+    this.setState({
+      [name]: value
+    });
+  }
+
   handleUpload = () => {
-    if (!this.state.file) {
+    if (!this.isUploadable()) {
       // no action for empty file input
+      this.setState({ badInput: true });
+      // make the alert disappear in 3 seconds
+      setInterval(() => this.setState({ badInput: false}), 3000);
       return;
     }
 
-    let file = this.state.file;
+    // Preparing form data to upload
     let formData = new FormData();
-    formData.append("network-config-file", file);
     let contentType = {
       headers: {
         "Content-Type": "multipart/form-data"
       }
     }
+    // getting the network config file and workspace
+    let file = this.state.file;
+    formData.append("network-config-file", file);
+    // formData.append("form_workspace", this.state.form_workspace);
     
     // Sending the config file with axios API POST
     axios.post(api, formData, contentType)
@@ -73,12 +102,18 @@ export default class FabricConfigurationForm extends React.Component {
       if (res.status === 200) {
         // update the parent state of test config file upload
         this.setState({ uploaded: true });
-        this.props.action(true);    // let the parent component know the upload success
+        this.props.action(true);    // let the parent component know the upload success [TODO: switch to Redux Global State Tree]
       }
     })
     .catch((err) => {
       console.log("[axios ERR]", err);
     });
+
+    axios.post("http://localhost:3001/v1/config-form", {"key1":"value1"}, {
+      header: {
+        "Content-Type": "application/json"
+      }
+    })
   }
 
   setUploaded = (bool) => {
@@ -95,8 +130,23 @@ export default class FabricConfigurationForm extends React.Component {
     this.props.action(false);   // let the parent componenet know the file is removed
   }
 
-  onDismiss = () => {
-    this.setState({ wrongMimeType: false });
+  onDismissWrongMime = () => {
+    this.setState({
+      wrongMimeType: false,
+    });
+  }
+
+  onDismissBadInput = () => {
+    this.setState({
+      badInput: false
+    });
+  }
+
+  isUploadable = () => {
+    return (
+      path.isAbsolute(this.state.form_workspace) &&
+      this.state.file
+    );
   }
 
   render() {
@@ -104,16 +154,21 @@ export default class FabricConfigurationForm extends React.Component {
       <>
         <Card>
         <CardHeader className="text-center">
-          <CardTitle tag="h4">Fabric Network Configuration</CardTitle>
+          <CardTitle tag="h4">Fabric Network Configuration (<i>Only .yaml File</i>)</CardTitle>
           <p className="card-category">Upload Your Own Hyperledger Network Configuration File.</p>
           <hr />
-          <p className="card-category">Or Click The <b>Using Sample Config File</b> Botton Above.</p>
+          <p className="card-category">Or Click The <b>Using Sample Config File</b> Button Above.</p>
         </CardHeader>
 
         <CardBody>
           <Form>
             <FormGroup>
-              <Label for="networkConfigFileBrowser">Add your own network config file here</Label>
+              <Label for="form_workspace">Blockchain Network Root Workspace Path</Label>
+              <Input type="text" name="form_workspace" id="form_workspace" value={this.state.form_workspace} onChange={(event) => this.handleInputChange(event)} />
+              {this.state.errorMessage}
+            </FormGroup>
+            <FormGroup>
+              <Label for="networkConfigFileBrowser">Add your own network config file here (assuming the root is in the above workspace)</Label>
               {/*
                 Remember to disable the file browser when test is running!
                 Just add a "disabled" attribute in <CustomInput disabled />
@@ -138,7 +193,7 @@ export default class FabricConfigurationForm extends React.Component {
               !this.state.uploaded
               ?
               <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
-                Upload Network Config File
+                Upload
               </Button>
               :
               <Alert color="primary">
@@ -149,8 +204,11 @@ export default class FabricConfigurationForm extends React.Component {
             }
             
 
-            <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismiss}>
+            <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismissWrongMime}>
               Only YAML Config File Is Allowed
+            </Alert>
+            <Alert color="danger" isOpen={this.state.badInput} toggle={this.onDismissBadInput}>
+              You didn't provide all proper inputs.
             </Alert>
           </div>
         </CardBody>

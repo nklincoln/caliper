@@ -35,12 +35,14 @@ import {
   Alert,
   Button,
   Row,
-  Col
+  Col,
+  Spinner,
 } from "reactstrap";
 
 // import configuration forms
 import TestConfigurationForm from "../components/Forms/TestConfigurationForm";
 import FabricConfigurationForm from "../components/Forms/FabricConfigurationForm";
+import GenerateTestConfigurationForm from "../components/Forms/GenerateTestConfigurationForm";
 
 import axios from "axios";
 let testApi = "http://localhost:3001/v1/run-test/";
@@ -142,7 +144,10 @@ class Configuration extends React.Component {
           <div className="text-center">
             {
               this.state.testStarted ?
-              <Button color="success" style={{width:"300px"}} disabled>Test Started</Button>
+              <>
+                <Spinner type="grow" color="warning" />
+                <Button color="success" style={{width:"300px"}} disabled>Test Started</Button>
+              </>
               :
               <Button color="warning" style={{width:"300px"}} onClick={this.startTest} disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>Start Test</Button>
             }
@@ -153,6 +158,9 @@ class Configuration extends React.Component {
               Test can be started once both "test" and "network" config files are uploaded
             </p>
           </div>
+
+          <hr />
+
           <div className="text-center">
             <Button outline color={this.state.useSample ? "primary" : "primary"} style={{width:"300px"}} onClick={this.handleUseSample}>Using Sample Config Files</Button>
             <p className="card-category">
@@ -162,12 +170,18 @@ class Configuration extends React.Component {
           </div>
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-              <TestConfigurationForm action={this.setTestConfig} ref={this.testConfigElement} />
+              <FabricConfigurationForm action={this.setNetworkConfig} ref={this.networkConfigElment} />
             </Col>
           </Row>
           <Row>
             <Col className="ml-auto mr-auto" md="10">
-              <FabricConfigurationForm action={this.setNetworkConfig} ref={this.networkConfigElment} />
+              <TestConfigurationForm action={this.setTestConfig} ref={this.testConfigElement} />
+            </Col>
+          </Row>
+          <hr />
+          <Row>
+            <Col className="ml-auto mr-auto" md="10">
+              <GenerateTestConfigurationForm />
             </Col>
           </Row>
         </div>

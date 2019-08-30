@@ -35,8 +35,8 @@ import { Collapse, Button, Nav, NavItem } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "caliper-logo.png";
-import { copyFileSync } from "fs";
-import { isWhiteSpaceLike } from "typescript";
+// import { copyFileSync } from "fs";
+// import { isWhiteSpaceLike } from "typescript";
 
 var ps;
 
@@ -108,23 +108,23 @@ class Sidebar extends React.Component {
             {!this.state.connected ?
               <Button
                 block
+                color="warning"
+                size="sm"
+                onClick={this.toggleConnection}
+              >
+                <i className="nc-icon nc-button-power" />
+                &nbsp;
+                Start Test
+              </Button> :
+              <Button
+                block
                 color="primary"
                 size="sm"
                 onClick={this.toggleConnection}
               >
                 <i className="nc-icon nc-button-power" />
                 &nbsp;
-                Connect
-              </Button> :
-              <Button
-                block
-                color="danger"
-                size="sm"
-                onClick={this.toggleConnection}
-              >
-                <i className="nc-icon nc-button-power" />
-                &nbsp;
-                Disconnect
+                Test Started
               </Button>
             }
           </div>
