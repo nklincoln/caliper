@@ -164,7 +164,14 @@ export default class FabricConfigurationForm extends React.Component {
           <Form>
             <FormGroup>
               <Label for="form_workspace">Blockchain Network Root Workspace Path</Label>
-              <Input type="text" name="form_workspace" id="form_workspace" value={this.state.form_workspace} onChange={(event) => this.handleInputChange(event)} />
+              <Input
+                type="text"
+                name="form_workspace"
+                id="form_workspace"
+                value={this.state.form_workspace}
+                onChange={(event) => this.handleInputChange(event)}
+                placeholder="e.g. /abs/path/to/blockchain/network/root/directory"
+              />
               {this.state.errorMessage}
             </FormGroup>
             <FormGroup>

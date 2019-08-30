@@ -43,6 +43,7 @@ import {
 import TestConfigurationForm from "../components/Forms/TestConfigurationForm";
 import FabricConfigurationForm from "../components/Forms/FabricConfigurationForm";
 import GenerateTestConfigurationForm from "../components/Forms/GenerateTestConfigurationForm";
+import ConfigurationGuide from "../components/Forms/ConfigurationGuide";
 
 import axios from "axios";
 let testApi = "http://localhost:3001/v1/run-test/";
@@ -159,8 +160,6 @@ class Configuration extends React.Component {
             </p>
           </div>
 
-          <hr />
-
           <div className="text-center">
             <Button outline color={this.state.useSample ? "primary" : "primary"} style={{width:"300px"}} onClick={this.handleUseSample}>Using Sample Config Files</Button>
             <p className="card-category">
@@ -168,6 +167,16 @@ class Configuration extends React.Component {
             </p>
             <Alert color="warning" isOpen={this.state.useSample}><b>Sample Config Files</b> Uploaded!</Alert>
           </div>
+
+
+          <Row>
+            <Col className="ml-auto mr-auto" md="10">
+              <ConfigurationGuide />
+            </Col>
+          </Row>
+
+          <hr />
+          
           <Row>
             <Col className="ml-auto mr-auto" md="10">
               <FabricConfigurationForm action={this.setNetworkConfig} ref={this.networkConfigElment} />

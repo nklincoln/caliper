@@ -70,7 +70,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
 
     monitor_type_docker: true,
     monitor_type_process: false,
-    monitor_type_docker_names: ["all"],
+    monitor_type_docker_names: [],
     monitor_type_process_command: "",
     monitor_type_process_arguments: "",
     monitor_type_process_multiOutput: "",
@@ -79,6 +79,8 @@ export default class GenerateTestConfigurationForm extends React.Component {
     // Tooltip toggle states
     tooltipBasicTestInfo: false,
 
+    // Validity check
+    lessThanOneTest: false,
   }
 
   // toggle the modal when inputs are varified
@@ -355,6 +357,13 @@ export default class GenerateTestConfigurationForm extends React.Component {
         }
   */
   removeInput = (name, parentName, parentIndex) => {
+    // handle less than one test round issue
+    if (name === "test_rounds" && this.state[name].length <= 1) {
+      this.setState({ lessThanOneTest: true });
+      setInterval(() => this.setState({ lessThanOneTest: false }), 3000);
+      return;
+    }
+
     if (hasInput(parentName) && hasInput(parentIndex)) {
       // nested array object of array object removing
       let targetObject = this.state[parentName];
@@ -733,7 +742,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
                 onClick={() => this.addInput("test_rounds", JSON.parse(JSON.stringify(testRoundsTemplete)))} 
                 color="warning"
               >
-                Add Test
+                Add Another Test
               </Button>
 
               <Button
@@ -742,6 +751,12 @@ export default class GenerateTestConfigurationForm extends React.Component {
               >
                 Remove
               </Button>
+
+              <Alert
+                color="danger"
+                isOpen={this.state.lessThanOneTest}
+              >At least one test round needed</Alert>
+
               <h6 className="text-secondary">
                 (Total: {this.state.test_rounds.length} Tests)
               </h6>
@@ -781,6 +796,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
                             id={dockerNameId}
                             onChange={(e) => this.onInputChange(e, "monitor_type_docker_names", idx)}
                             value={val}
+                            placeholder="e.g. all"
                           />
                         </div>
                       );
@@ -846,7 +862,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
             </Form>
 
             <div className="text-center">
-              <Button color="secondary" style={{width:"300px"}} onClick={this.handleGenerate}>
+              <Button color="primary" style={{width:"300px"}} onClick={this.handleGenerate}>
                 Generate
               </Button>
 
