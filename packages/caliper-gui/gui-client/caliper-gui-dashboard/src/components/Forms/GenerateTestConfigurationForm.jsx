@@ -91,6 +91,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
       testConfig: testConfig,
       modal: !prevState.modal
     }));
+
   }
 
   // Summarized the form data provided by user, and generate a copiable test configuration yaml file content
@@ -402,7 +403,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
             <CardTitle tag="h4">Generate New Test Configuration</CardTitle>
             <p className="card-category">Genearte test config file and save as YAML and then use if for test above.</p>
             <hr />
-            <Button onClick={() => console.log(this.state)}>DEBUG Show State</Button>
+            {/* <Button onClick={() => console.log(this.state)}>DEBUG Show State</Button> */}
           </CardHeader>
           <CardBody>
             <h3 className="text-primary">Test Configuration</h3>
