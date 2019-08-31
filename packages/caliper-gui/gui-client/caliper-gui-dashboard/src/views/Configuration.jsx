@@ -53,14 +53,13 @@ class Configuration extends React.Component {
     super(props);
     this.testConfigElement = React.createRef();
     this.networkConfigElment = React.createRef();
-  }
-
-  state = {
-    testConfigSet: false,
-    networkConfigSet: false,
-    useSample: false,
-    testStarted: false,
-    testResult: null,
+    this.state = {
+      testConfigSet: false,
+      networkConfigSet: false,
+      useSample: false,
+      testStarted: false,
+      testResult: null,
+    };
   }
 
   setTestConfig = (bool) => {
@@ -147,10 +146,22 @@ class Configuration extends React.Component {
               this.state.testStarted ?
               <>
                 <Spinner type="grow" color="warning" />
-                <Button color="success" style={{width:"300px"}} disabled>Test Started</Button>
+                <Button
+                  color="success"
+                  style={{width:"300px"}}
+                  disabled
+                >
+                  Test Started
+                </Button>
               </>
               :
-              <Button color="warning" style={{width:"300px"}} onClick={this.startTest} disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>Start Test</Button>
+              <Button
+                color="warning"
+                style={{width:"300px"}}
+                onClick={this.startTest}
+                disabled={!(this.state.testConfigSet && this.state.networkConfigSet)}>
+                Start Test
+              </Button>
             }
 
             
