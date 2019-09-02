@@ -1,4 +1,14 @@
-/*
+/*!
+
+=========================================================
+* Hyperledger Caliper GUI
+=========================================================
+
+* Author: Jason You
+* GitHub: 
+* Licensed under the Apache 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+
+Copyright (c) 2019 Jason You
 
 */
 
@@ -22,7 +32,6 @@ let api = "http://localhost:3001/v1/test-config";
 const mime = require("mime-types");
 
 export default class TestConfigurationForm extends React.Component {
-
   state = {
     file: null,
     uploaded: false,
@@ -110,7 +119,6 @@ export default class TestConfigurationForm extends React.Component {
             <p className="card-category">Or Click The <b>Using Sample Config File</b> Button Above.</p>
           </CardHeader>
           <CardBody>
-
             <Form>
               <FormGroup>
                 <Label for="testConfigFileBrowser">Add your own test config file here</Label>
@@ -121,38 +129,35 @@ export default class TestConfigurationForm extends React.Component {
                 <CustomInput type="file" id="testConfigFileBrowser" name="test-config-file" label="Pick your own test benchmark file..." onChange={(event) => this.handleFile(event) } />
               </FormGroup>
             </Form>
+            <div className="text-center">
+              {
+                this.state.file !== null && this.state.file !== undefined && !this.state.uploaded
+                ?
+                <>
+                  <p className="card-category">The file <b>{this.state.file.name}</b> is added</p>
+                </>
+                :
+                null
+              }
 
-              <div className="text-center">
-                {
-                  this.state.file !== null && this.state.file !== undefined && !this.state.uploaded
-                  ?
-                  <>
-                    <p className="card-category">The file <b>{this.state.file.name}</b> is added</p>
-                  </>
-                  :
-                  null
-                }
-
-                {/* Display the upload button when the file is added */}
-                {
-                  !this.state.uploaded
-                  ?
-                  <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
-                    Upload
-                  </Button>
-                  :
-                  <Alert color="primary">
-                    Test Config File Uploaded! Click on <b>Start Test</b> Above To Start Test!
-                    <hr />
-                    Press <b>RESET</b> to replace with different config files.
-                  </Alert>
-                }
-                
-
-                <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismiss}>
-                  Only YAML Config File Is Allowed
+              {/* Display the upload button when the file is added */}
+              {
+                !this.state.uploaded
+                ?
+                <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
+                  Upload
+                </Button>
+                :
+                <Alert color="primary">
+                  Test Config File Uploaded! Click on <b>Start Test</b> Above To Start Test!
+                  <hr />
+                  Press <b>RESET</b> to replace with different config files.
                 </Alert>
-              </div>
+              }
+              <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismiss}>
+                Only YAML Config File Is Allowed
+              </Alert>
+            </div>
           </CardBody>
         </Card>
       </>

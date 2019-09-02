@@ -29,8 +29,6 @@ Copyright (c) 2019 Jason You
 */
 
 import Dashboard from "views/Dashboard.jsx";
-// import Notifications from "views/Notifications.jsx";
-// import Icons from "views/Icons.jsx";
 import Documentation from "views/Documentation.jsx";
 import History from "views/History.jsx";
 // import NetworkGraph from "views/NetworkGraph.jsx";
@@ -49,13 +47,6 @@ var routes = [
   //   name: "Network Graph",
   //   icon: "nc-icon nc-vector",
   //   component: NetworkGraph,
-  //   layout: "/admin"
-  // },
-  // {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   icon: "nc-icon nc-bell-55",
-  //   component: Notifications,
   //   layout: "/admin"
   // },
   {
@@ -81,15 +72,3 @@ var routes = [
   },
 ];
 export default routes;
-
-
-/*
-Icon Tab Route Backup
-  {
-    path: "/icons",
-    name: "Icons",
-    icon: "nc-icon nc-diamond",
-    component: Icons,
-    layout: "/admin"
-  }
-*/

@@ -11,24 +11,9 @@
 Copyright (c) 2019 Jason You
 
 */
-/*!
 
-- Caliper GUI includes codes from Creative Time, which is licensed
-- under the MIT license:
-=========================================================
-* Bootstrap Theme Copyright (Paper Dashboard React - v1.1.0)
-=========================================================
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-react
-* Paper Dashboard React - v1.1.0 Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard-react/blob/master/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-// TODO: Finish The Network Graph Functionality By Extracting Network Information From Caliper
+// TODO: Finish The Network Graph Functionality By Extracting Network Information From Caliper-cli.
+// Once finished, get the route to make this page works.
 
 import React from "react";
 import { Graph } from 'react-d3-graph';  // blockchain graph visualization
@@ -42,8 +27,7 @@ import {
   Col
 } from "reactstrap";
 
-// Graph Visualization
-// graph payload (with minimalist structure)
+// sample graph visualization data
 const data = {
   nodes: [
     { id: '<ORDERER>', symbolType: 'star' },
@@ -68,7 +52,7 @@ const data = {
   ]
 };
 
-const myConfig = {
+const graphConfig = {
   "automaticRearrangeAfterDropNode": false,
   "collapsible": false,
   "directed": false,
@@ -177,50 +161,50 @@ class NetworkGraph extends React.Component {
         <div className="content">
           <Row>
             <Col md="12">
-              <Card>
-                <CardBody>
-                  <div className="text-center text-primary">
-                    <h2>Network Graph</h2>
-                    <h5>Hyperledger Fabric</h5>
-                  </div>
-                </CardBody>
-                <CardFooter>
-                  <hr />
-                  <div>
-                    <Row className="text-center">
-                      <Col className="ml-auto" lg="4" md="6" xs="6">
-                        <h5>
-                          2 <br />
-                          <small>Channels  </small>
-                        </h5>
-                      </Col>
-                      <Col className="ml-auto mr-auto" lg="4" md="6" xs="6">
-                        <h5>
-                          1 <br />
-                          <small>Orderers</small>
-                        </h5>
-                      </Col>
-                      <Col className="mr-auto" lg="4">
-                        <h5>
-                          6 <br />
-                          <small>Peers</small>
-                        </h5>
-                      </Col>
-                    </Row>
-                  </div>
-                </CardFooter>
-              </Card>
+            <Card>
+              <CardBody>
+                <div className="text-center text-primary">
+                  <h2>Network Graph</h2>
+                  <h5>Hyperledger Fabric</h5>
+                </div>
+              </CardBody>
+              <CardFooter>
+                <hr />
+                <div>
+                  <Row className="text-center">
+                    <Col className="ml-auto" lg="4" md="6" xs="6">
+                    <h5>
+                      2 <br />
+                      <small>Channels</small>
+                    </h5>
+                    </Col>
+                    <Col className="ml-auto mr-auto" lg="4" md="6" xs="6">
+                    <h5>
+                      1 <br />
+                      <small>Orderers</small>
+                    </h5>
+                    </Col>
+                    <Col className="mr-auto" lg="4">
+                    <h5>
+                      6 <br />
+                      <small>Peers</small>
+                    </h5>
+                    </Col>
+                  </Row>
+                </div>
+              </CardFooter>
+            </Card>
             </Col>
           </Row>
           <Row>
             <Col md="12">
-              <Card style={{ background: "black" }}>
-                  <Graph
-                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                    data={data}
-                    config={myConfig}
-                />
-              </Card>
+            <Card style={{ background: "black" }}>
+            <Graph
+            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+            data={data}
+            config={graphConfig}
+            />
+            </Card>
             </Col>
           </Row>
         </div>

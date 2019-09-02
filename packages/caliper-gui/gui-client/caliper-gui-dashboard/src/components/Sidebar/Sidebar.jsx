@@ -30,7 +30,7 @@ Copyright (c) 2019 Jason You
 
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
-import { Collapse, Button, Nav, NavItem } from "reactstrap";
+import { Button, Collapse, Nav, NavItem, Spinner } from "reactstrap";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 
@@ -47,7 +47,7 @@ class Sidebar extends React.Component {
     this.sidebar = React.createRef();
     this.state = {
       collapse: true,
-      connected: false,
+      testStarted: false,
       pathSlice: [],
     };
   }
@@ -59,15 +59,12 @@ class Sidebar extends React.Component {
   noCollapse = () => {
     this.setState(state => ({ collapse: false }));
   }
-  
-  toggleConnection = () => {
-    this.setState(state => ({ connected: !state.connected }));
-  }
 
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
   }
+
   componentDidMount() {
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.sidebar.current, {
@@ -87,133 +84,134 @@ class Sidebar extends React.Component {
         className="sidebar"
         data-color={this.props.bgColor}
         data-active-color={this.props.activeColor}
-      >
+        >
         <div className="logo">
           <Link
             to="/"
             className="simple-text logo-mini"
-          >
-            <div className="logo-img">
-              <img src={logo} alt="react-logo" />
-            </div>
+            >
+          <div className="logo-img">
+            <img src={logo} alt="react-logo" />
+          </div>
           </Link>
           <Link
             to="/"
             className="simple-text logo-normal"
-          >
-            Caliper GUI
+            >
+          Caliper GUI
           </Link>
-
           <div>
-            {!this.state.connected ?
-              <Button
-                block
-                color="warning"
-                size="sm"
-                onClick={this.toggleConnection}
-              >
-                <i className="nc-icon nc-button-power" />
-                &nbsp;
-                Start Test
-              </Button> :
-              <Button
-                block
-                color="primary"
-                size="sm"
-                onClick={this.toggleConnection}
-              >
-                <i className="nc-icon nc-button-power" />
-                &nbsp;
-                Test Started
-              </Button>
+            <Button
+              block
+              color={!this.state.testStarted ? "warning" : "primary"}
+              size="sm"
+              onClick={() => {
+                this.setState(state => ({ testStarted: !state.testStarted }))
+              }}
+              disabled={this.state.testStarted}
+            >
+            <i className="nc-icon nc-button-power" />
+            &nbsp;
+            {this.state.testStarted ? "Test Started" : "Start Test"}
+            &nbsp;
+            {this.state.testStarted ?
+            <Spinner style={{float:"right"}} size="sm" color="warning" />:
+            ""
             }
+            </Button> 
           </div>
         </div>
-
         <div className="sidebar-wrapper" ref={this.sidebar}>
           <Nav>
             {this.props.routes.map((prop, key) => {
-              return (
-                <NavItem
-                  className={
-                    this.activeRoute(prop.path) +
-                    (prop.bottom ? " active-pro" : "")
-                  }
-                  key={key}
+            return (
+              <NavItem
+                className={
+                  this.activeRoute(prop.path) +
+                  (prop.bottom ? " active-pro" : "")
+                }
+                key={key}
+              >
+              <NavLink
+                to={prop.layout + prop.path}
+                className="nav-link"
+                activeClassName="active"
+                onClick={
+                prop.path === "/dashboard" ?
+                this.toggle :
+                this.noCollapse
+                }
+              >
+                <i className={prop.icon} />
+                <p>{prop.name}</p>
+              </NavLink>
+              {
+                prop.path === "/dashboard" ?
+                <Collapse
+                  isOpen={this.state.collapse}
+                  style={{backgroundColor: "rgba(236, 249, 249, 0.05)"}}
                 >
-                  <NavLink
-                    to={prop.layout + prop.path}
-                    className="nav-link"
-                    activeClassName="active"
-                    onClick={
-                      prop.path === "/dashboard" ?
-                      this.toggle :
-                      this.noCollapse
-                    }
+                <Nav>
+                  <NavItem
+                    className={this.activeRoute(prop.path + "/tx-throughput")}
+                    key="tx-throughput"
                   >
-                    <i className={prop.icon} />
-                    <p>{prop.name}</p>
-                  </NavLink>
-
-                  {
-                    prop.path === "/dashboard" ?
-                    <Collapse
-                      isOpen={this.state.collapse}
-                      style={{backgroundColor: "rgba(236, 249, 249, 0.05)"}}
+                    <NavLink
+                      to={prop.layout + prop.path + "/tx-throughput"}
+                      className="nav-link"
+                      activeClassName="active"
                     >
-                      <NavItem
-                        className={this.activeRoute(prop.path + "/tx-throughput")}
-                        key="tx-throughput"
-                      >
-                        <NavLink
-                          to={prop.layout + prop.path + "/tx-throughput"}
-                          className="nav-link"
-                          activeClassName="active"
-                        >
-                          Transaction Throughput
-                        </NavLink>
-                      </NavItem>
-                      <NavItem
-                        className={this.activeRoute(prop.path + "/tx-latency")}
-                        key="tx-latency"
-                      >
-                        <NavLink
-                          to={prop.layout + prop.path + "/tx-latency"}
-                          className="nav-link"
-                          activeClassName="active"
-                        >
-                          Transaction Latency
-                        </NavLink>
-                      </NavItem>
-                      <NavItem
-                        className={this.activeRoute(prop.path + "/read-throughput")}
-                        key="read-throughput"
-                      >
-                        <NavLink
-                          to={prop.layout + prop.path + "/read-throughput"}
-                          className="nav-link"
-                          activeClassName="active"
-                        >
-                          Read Throughput
-                        </NavLink>
-                      </NavItem>
-                      <NavItem
-                        className={this.activeRoute(prop.path + "/read-latency")}
-                        key="read-latency"
-                      >
-                        <NavLink
-                          to={prop.layout + prop.path + "/read-latency"}
-                          className="nav-link"
-                          activeClassName="active"
-                        >
-                          Read Latency
-                        </NavLink>
-                      </NavItem>
-                    </Collapse> :
-                    null
-                  }
-                </NavItem>
-              );
+                      Transaction Throughput
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <Nav>
+                  <NavItem
+                    className={this.activeRoute(prop.path + "/tx-latency")}
+                    key="tx-latency"
+                  >
+                    <NavLink
+                      to={prop.layout + prop.path + "/tx-latency"}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Transaction Latency
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <Nav>
+                  <NavItem
+                    className={this.activeRoute(prop.path + "/read-throughput")}
+                    key="read-throughput"
+                  >
+                    <NavLink
+                      to={prop.layout + prop.path + "/read-throughput"}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Read Throughput
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <Nav>
+                  <NavItem
+                    className={this.activeRoute(prop.path + "/read-latency")}
+                    key="read-latency"
+                  >
+                    <NavLink
+                      to={prop.layout + prop.path + "/read-latency"}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Read Latency
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                </Collapse> :
+                null
+              }
+              </NavItem>
+            );
             })}
           </Nav>
         </div>

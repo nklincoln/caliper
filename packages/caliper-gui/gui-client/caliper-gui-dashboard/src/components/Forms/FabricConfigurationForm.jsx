@@ -1,4 +1,14 @@
-/*
+/*!
+
+=========================================================
+* Hyperledger Caliper GUI
+=========================================================
+
+* Author: Jason You
+* GitHub: 
+* Licensed under the Apache 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+
+Copyright (c) 2019 Jason You
 
 */
 
@@ -153,54 +163,53 @@ export default class FabricConfigurationForm extends React.Component {
     return (
       <>
         <Card>
-        <CardHeader className="text-center">
-          <CardTitle tag="h4">Fabric Network Configuration (<i>Only .yaml File</i>)</CardTitle>
-          <p className="card-category">Upload Your Own Hyperledger Network Configuration File.</p>
-          <hr />
-          <p className="card-category">Or Click The <b>Using Sample Config File</b> Button Above.</p>
-        </CardHeader>
-
-        <CardBody>
-          <Form>
-            <FormGroup>
-              <Label for="form_workspace">Blockchain Network Root Workspace Path</Label>
-              <Input
-                type="text"
-                name="form_workspace"
-                id="form_workspace"
-                value={this.state.form_workspace}
-                onChange={(event) => this.handleInputChange(event)}
+          <CardHeader className="text-center">
+            <CardTitle tag="h4">Fabric Network Configuration (<i>Only .yaml File</i>)</CardTitle>
+            <p className="card-category">Upload Your Own Hyperledger Network Configuration File.</p>
+            <hr />
+            <p className="card-category">Or Click The <b>Using Sample Config File</b> Button Above.</p>
+          </CardHeader>
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="form_workspace">Blockchain Network Root Workspace Path</Label>
+                <Input
+                  type="text"
+                  name="form_workspace"
+                  id="form_workspace"
+                  value={this.state.form_workspace}
+                  onChange={(event) => this.handleInputChange(event)}
                 placeholder="e.g. /abs/path/to/blockchain/network/root/directory"
-              />
-              {this.state.errorMessage}
-            </FormGroup>
-            <FormGroup>
-              <Label for="networkConfigFileBrowser">Add your own network config file here (assuming the root is in the above workspace)</Label>
-              {/*
+                />
+                {this.state.errorMessage}
+              </FormGroup>
+              <FormGroup>
+                <Label for="networkConfigFileBrowser">Add your own network config file here (assuming the root is in the above workspace)</Label>
+                {/*
                 Remember to disable the file browser when test is running!
-                Just add a "disabled" attribute in <CustomInput disabled />
-              */}
-              <CustomInput type="file" id="networkConfigFileBrowser" name="network-config-file" label="Pick your own network benchmark file..." onChange={(event) => this.handleFile(event) } />
-            </FormGroup>
-          </Form>
-
-          <div className="text-center">
-            {
+                Just add a "disabled" attribute in 
+                <CustomInput disabled />
+                */}
+                <CustomInput type="file" id="networkConfigFileBrowser" name="network-config-file" label="Pick your own network benchmark file..." onChange={(event) =>
+                this.handleFile(event) } />
+              </FormGroup>
+            </Form>
+            <div className="text-center">
+              {
               this.state.file !== null && this.state.file !== undefined && !this.state.uploaded
               ?
               <>
-                <p className="card-category">The file <b>{this.state.file.name}</b> is added</p>
+              <p className="card-category">The file <b>{this.state.file.name}</b> is added</p>
               </>
               :
               null
-            }
-
-            {/* Display the upload button when the file is added */}
-            {
+              }
+              {/* Display the upload button when the file is added */}
+              {
               !this.state.uploaded
               ?
               <Button color="primary" style={{width:"300px"}} onClick={this.handleUpload}>
-                Upload
+              Upload
               </Button>
               :
               <Alert color="primary">
@@ -208,18 +217,16 @@ export default class FabricConfigurationForm extends React.Component {
                 <hr />
                 Press <b>RESET</b> to replace with different config files.
               </Alert>
-            }
-            
-
-            <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismissWrongMime}>
-              Only YAML Config File Is Allowed
-            </Alert>
-            <Alert color="danger" isOpen={this.state.badInput} toggle={this.onDismissBadInput}>
-              You didn't provide all proper inputs.
-            </Alert>
-          </div>
-        </CardBody>
-      </Card>
+              }
+              <Alert color="danger" isOpen={this.state.wrongMimeType} toggle={this.onDismissWrongMime}>
+                Only YAML Config File Is Allowed
+              </Alert>
+              <Alert color="danger" isOpen={this.state.badInput} toggle={this.onDismissBadInput}>
+                You didn't provide all proper inputs.
+              </Alert>
+            </div>
+          </CardBody>
+        </Card>
       </>
     );
   }

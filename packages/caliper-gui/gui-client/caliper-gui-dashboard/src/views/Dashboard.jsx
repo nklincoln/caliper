@@ -24,7 +24,7 @@ import {
   barOptions,
   lineOptions,
   doughnutOptions,
-} from "../data/mockData";
+} from "../variables/charts";
 
 // Utility functions for notifications
 import NotificationAlert from "react-notification-alert";

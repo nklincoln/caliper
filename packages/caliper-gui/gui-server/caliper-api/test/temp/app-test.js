@@ -8,12 +8,16 @@ app.get("/random/:min/:max", (req, res) => {
 
     if (isNaN(min) || isNaN(max)) {
         res.status(400);
-        res.json({error: "Bad request"});
+        res.json({
+            error: "Bad request"
+        });
         return;
     }
 
     var result = Math.round((Math.random() * (max - min)) + min);
-    res.json({ result: result });
+    res.json({
+        result: result
+    });
 });
 
 app.listen(3000, () => {

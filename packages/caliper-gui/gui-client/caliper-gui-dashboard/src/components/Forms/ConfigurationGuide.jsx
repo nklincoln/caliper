@@ -1,4 +1,14 @@
-/*
+/*!
+
+=========================================================
+* Hyperledger Caliper GUI
+=========================================================
+
+* Author: Jason You
+* GitHub: 
+* Licensed under the Apache 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+
+Copyright (c) 2019 Jason You
 
 */
 
@@ -10,7 +20,6 @@ import {
   CardHeader, 
   CardTitle,
 } from "reactstrap";
-// for API file POST
 
 
 export default class ConfigurationGuide extends React.Component {
@@ -49,7 +58,7 @@ export default class ConfigurationGuide extends React.Component {
             <div className="typography-line">
                 <p>
                     <span>Step 4</span>
-                    Starting the test with the yellow <b>Start Test</b> button after all the config files are uploaded. (Make sure that the <b>gui-server</b> is running, and <b>MongoDB</b> is installed and running)
+                    Starting the test with the yellow <b>Start Test</b> button after all the config files are uploaded. (Make sure that the <b>gui-server</b> is running with <b>npm start</b>, and <b>MongoDB</b> is installed and running)
                 </p>
             </div>
         </CardBody>

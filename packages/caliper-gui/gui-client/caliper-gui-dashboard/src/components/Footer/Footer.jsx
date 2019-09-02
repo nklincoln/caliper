@@ -50,8 +50,8 @@ class Footer extends React.Component {
                   </a>
                 </li>
                 <li>
-                  <a href="https://github.com/hyperledger/caliper" target="_blank">
-                    GitHub
+                  <a href="https://github.com/Jasonyou1995/caliper-1/tree/caliper-gui/packages/caliper-gui" target="_blank">
+                    Caliper GUI GitHub
                   </a>
                 </li>
                 <li>

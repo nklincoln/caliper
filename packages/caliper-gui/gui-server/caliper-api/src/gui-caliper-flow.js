@@ -1,20 +1,19 @@
 /*
-* Author:               Jason You
-* Last modified date:   Aug 19 2019
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
+ * Author:               Jason You
+ * Last modified date:   Sep 1 2019
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 'use strict';
 
 const {
@@ -33,8 +32,6 @@ const path = require('path');
 
 const logger = CaliperUtils.getLogger('caliper-flow');
 
-const DEBUG = true;
-
 /**
  * Run the benchmark based on passed arguments
  * @param {String} absConfigFile fully qualified path of the test configuration file
@@ -46,20 +43,6 @@ const DEBUG = true;
  */
 module.exports.run = async function(absConfigFile, absNetworkFile, admin, clientFactory, workspace) {
 
-    // Get all the configuration files to run benchmarks from user (gui-client side)
-    
-    // What do they need in each step?
-
-    // In the runBenchmar.js: just pathes
-
-    // In the caliper-flow.js: also just pathes with two more operational objects for usage.
-
-    // What can I get from GUI? I can get object, and probably pathes too. But I will more likely directly get JSON object.
-    // So I will need to add the admin and clientFactory aquiring in this gui-caliper-flow file.
-
-
-
-
     let errorStatus = 0;
     let successes = 0;
     let failures = 0;
@@ -67,15 +50,9 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
     let configObject = CaliperUtils.parseYaml(absConfigFile);
     let networkObject = CaliperUtils.parseYaml(absNetworkFile);
 
-    if (DEBUG) {
-        console.log('[DEBUG==========] length test obj:', Object.keys(configObject).length);
-        console.log('[DEBUG==========] length network obj:', Object.keys(networkObject).length);
-        // console.log('[DEBUG==========] Blockchain obj:', Blockchain);
-    }
-
     logger.info('####### Caliper Test #######');
     const adminClient = new Blockchain(admin);
-    const clientOrchestrator  = new ClientOrchestrator(absConfigFile);
+    const clientOrchestrator = new ClientOrchestrator(absConfigFile);
     const monitorOrchestrator = new MonitorOrchestrator(absConfigFile);
 
     // Test observer is dynamically loaded, but defaults to local
@@ -94,11 +71,6 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
     }
     const TestObserver = Observer;
 
-    if (DEBUG) {
-        console.log('[DEBUG] observerType:', observerType);
-        // console.log('[DEBUG] TestObserver:', TestObserver);
-    }
-
     const testObserver = new TestObserver(absConfigFile);
 
     // Report
@@ -114,20 +86,13 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
             if (!networkObject.caliper.command.start.trim()) {
                 throw new Error('Start command is specified but it is empty');
             }
-            if(!skipStart){
-                const cmd = 'cd ' + workspace + ';' + networkObject.caliper.command.start;  // cd to the workspace cause all the network components are in there for configuration
-                if (DEBUG) {
-                    console.log('[DEBUG] process.cwd():', process.cwd());
-                    console.log('[DEBUG] cmd', cmd);
-                }
+            if (!skipStart) {
+                const cmd = 'cd ' + workspace + ';' + networkObject.caliper.command.start; // cd to the workspace cause all the network components are in there for configuration
                 await CaliperUtils.execAsync(cmd);
             }
         }
 
-        await adminClient.init();       // bug is in here! #1434 of fabric.js
-        if (DEBUG) {
-            console.log('&&&&&&&&&&&----------adminClient.init() SUCCESS!---------&&&&&&')
-        }
+        await adminClient.init(); // bug is in here! #1434 of fabric.js
         await adminClient.installSmartContract();
         let numberOfClients = await clientOrchestrator.init();
         let clientArgs = await adminClient.prepareClients(numberOfClients);
@@ -154,7 +119,7 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
         report.printResultsByRound();
         await monitorOrchestrator.stopAllMonitors();
 
-        const date = new Date().toISOString().replace(/-/g,'').replace(/:/g,'').substr(0,15);
+        const date = new Date().toISOString().replace(/-/g, '').replace(/:/g, '').substr(0, 15);
         const outFile = path.join(process.cwd(), `report-${date}.html`);
         await report.finalize(outFile);
 
@@ -170,7 +135,7 @@ module.exports.run = async function(absConfigFile, absNetworkFile, admin, client
             if (!networkObject.caliper.command.end.trim()) {
                 logger.error('End command is specified but it is empty');
             } else {
-                if(!skipEnd){
+                if (!skipEnd) {
                     const cmd = 'cd ' + workspace + ';' + networkObject.caliper.command.end;
                     await CaliperUtils.execAsync(cmd);
                 }

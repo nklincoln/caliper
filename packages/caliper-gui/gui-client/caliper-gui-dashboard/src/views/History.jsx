@@ -11,22 +11,6 @@
 Copyright (c) 2019 Jason You
 
 */
-/*!
-
-- Caliper GUI includes codes from Creative Time, which is licensed
-- under the MIT license:
-=========================================================
-* Bootstrap Theme Copyright (Paper Dashboard React - v1.1.0)
-=========================================================
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-react
-* Paper Dashboard React - v1.1.0 Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard-react/blob/master/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 
 import React from "react";
 import { HorizontalBar, Doughnut } from "react-chartjs-2";
@@ -46,7 +30,7 @@ import {
 import {
   doughnutData,
   doughnutOptions,
-} from "../data/mockData";
+} from "../variables/charts";
 
 var dateOptions = {
   year: 'numeric',
@@ -81,6 +65,7 @@ const data = {
   ]
 };
 
+// visualization options
 const options = {
   scales: {
     yAxes: [{
@@ -102,149 +87,146 @@ class History extends React.Component {
   render() {
     return (
       <>
-        <div className="content">
-          <Row>
-            <Col md="12">
-              <Card>
-                <CardHeader>
-                  <CardTitle tag="h4">Benchmark Histories</CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive>
-                    <thead className="text-primary">
-                      <tr>
-                        <th>Date</th>
-                        <th>Ave. Read Latency</th>
-                        <th>Ave. Read Throughput</th>
-                        <th>Ave. Tx. Latency</th>
-                        <th className="text-right">Ave. Tx. Throughput</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{new Date("2019-08-01T17:02:05").toLocaleDateString("en-US", dateOptions)}</td>
-                        <td>33 ms</td>
-                        <td>1000</td>
-                        <td>50 ms</td>
-                        <td className="text-right">952</td>
-                      </tr>
-                      <tr>
-                        <td>{new Date("2019-08-02T08:23:05").toLocaleDateString("en-US", dateOptions)}</td>
-                        <td>35 ms</td>
-                        <td>800</td>
-                        <td>60 ms</td>
-                        <td className="text-right">1430</td>
-                      </tr>
-                      <tr>
-                        <td>{new Date("2019-08-03T07:23:05").toLocaleDateString("en-US", dateOptions)}</td>
-                        <td>30 ms</td>
-                        <td>948</td>
-                        <td>45 ms</td>
-                        <td className="text-right">1040</td>
-                      </tr>
-                      <tr>
-                        <td>{new Date("2019-08-03T17:23:05").toLocaleDateString("en-US", dateOptions)}</td>
-                        <td>30 ms</td>
-                        <td>394</td>
-                        <td>90 ms</td>
-                        <td className="text-right">845</td>
-                      </tr>
-                      <tr>
-                        <td>{new Date().toLocaleDateString("en-US", dateOptions)}</td>
-                        <td>45 ms</td>
-                        <td>1049</td>
-                        <td>53 ms</td>
-                        <td className="text-right">1340</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                  <hr />
-                  <p className="description">I will add clickable links to detailed JSON data (MongoDB?)</p>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md="12">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Success Rate</CardTitle>
-                  <p className='card-category'>Doughnut Chart for Success Rate Visualization with Patternse</p>
-                </CardHeader>
-                <CardBody>
-                  <Doughnut
-                    data={doughnutData}
-                    options={doughnutOptions}
-                    height={300}
-                  />
-                </CardBody>
-                <CardFooter>
-                  <hr />
-                  <div className='stats'>
-                    <i className="fa fa-anchor" /> Anchor
-                  </div>
-                </CardFooter>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Tx Throughput History
-                  </CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <HorizontalBar data={data} options={options} />
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Tx Latency History
-                  </CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <HorizontalBar data={data} options={options} />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Read Throughput History
-                  </CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <HorizontalBar data={data} options={options} />
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Read Latency History
-                  </CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <HorizontalBar data={data} options={options} />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
+      <div className="content">
+        <Row>
+          <Col md="12">
+          <Card>
+            <CardHeader>
+              <CardTitle tag="h4">Benchmark Histories</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <Table responsive>
+                <thead className="text-primary">
+                  <tr>
+                    <th>Date</th>
+                    <th>Ave. Read Latency</th>
+                    <th>Ave. Read Throughput</th>
+                    <th>Ave. Tx. Latency</th>
+                    <th className="text-right">Ave. Tx. Throughput</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{new Date("2019-08-01T17:02:05").toLocaleDateString("en-US", dateOptions)}</td>
+                    <td>33 ms</td>
+                    <td>1000</td>
+                    <td>50 ms</td>
+                    <td className="text-right">952</td>
+                  </tr>
+                  <tr>
+                    <td>{new Date("2019-08-02T08:23:05").toLocaleDateString("en-US", dateOptions)}</td>
+                    <td>35 ms</td>
+                    <td>800</td>
+                    <td>60 ms</td>
+                    <td className="text-right">1430</td>
+                  </tr>
+                  <tr>
+                    <td>{new Date("2019-08-03T07:23:05").toLocaleDateString("en-US", dateOptions)}</td>
+                    <td>30 ms</td>
+                    <td>948</td>
+                    <td>45 ms</td>
+                    <td className="text-right">1040</td>
+                  </tr>
+                  <tr>
+                    <td>{new Date("2019-08-03T17:23:05").toLocaleDateString("en-US", dateOptions)}</td>
+                    <td>30 ms</td>
+                    <td>394</td>
+                    <td>90 ms</td>
+                    <td className="text-right">845</td>
+                  </tr>
+                  <tr>
+                    <td>{new Date().toLocaleDateString("en-US", dateOptions)}</td>
+                    <td>45 ms</td>
+                    <td>1049</td>
+                    <td>53 ms</td>
+                    <td className="text-right">1340</td>
+                  </tr>
+                </tbody>
+              </Table>
+              <hr />
+              <p className="description">I will add clickable links to detailed JSON data (MongoDB?)</p>
+            </CardBody>
+          </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Success Rate</CardTitle>
+              <p className='card-category'>
+                Doughnut Chart for Success Rate Visualization with Patternse
+              </p>
+            </CardHeader>
+            <CardBody>
+              <Doughnut
+                data={doughnutData}
+                options={doughnutOptions}
+                height={300}
+                />
+            </CardBody>
+            <CardFooter>
+              <hr />
+              <div className='stats'>
+                <i className="fa fa-anchor" /> Anchor
+              </div>
+            </CardFooter>
+          </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Tx Throughput History
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              <HorizontalBar data={data} options={options} />
+            </CardBody>
+          </Card>
+          </Col>
+          <Col md="6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Tx Latency History
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              <HorizontalBar data={data} options={options} />
+            </CardBody>
+          </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Read Throughput History
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              <HorizontalBar data={data} options={options} />
+            </CardBody>
+          </Card>
+          </Col>
+          <Col md="6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Read Latency History
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              <HorizontalBar data={data} options={options} />
+            </CardBody>
+          </Card>
+          </Col>
+        </Row>
+      </div>
       </>
     );
   }

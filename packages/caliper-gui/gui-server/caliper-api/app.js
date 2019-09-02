@@ -7,7 +7,9 @@ const cors = require("cors");
 
 app.use(cors());
 // For data posting
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+    extended: true
+}));
 app.use(express.json());
 
 
@@ -15,5 +17,5 @@ app.use("/v1", apiV1);
 // app.use("/v2", apiV2);
 
 app.listen(PORT, function() {
-	console.log(`Caliper-API started on port ${PORT}`);
+    console.log(`Caliper-API started on port ${PORT}`);
 });
