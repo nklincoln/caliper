@@ -130,7 +130,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
       // append array of docker names for docker monitor config
       testConfig.test.monitor["docker"] = {
         name: []    // array of docker names to be appended
-      }
+      };
       this.state.monitor_type_docker_names.map((val, idx) => {
         return testConfig.test.monitor.docker.name.push(val);
       });
@@ -150,28 +150,28 @@ export default class GenerateTestConfigurationForm extends React.Component {
 
     // Save test config yaml into a string
     return GuiUtils.addYamlDash(testConfig);
-  }
+  };
 
   toggleModal = () => {
     this.setState(prevState => ({
       modal: !prevState.modal
     }));
-  }
+  };
 
   toggleTooltip = (toggleState) => {
     console.log(toggleState);
     this.setState({
       [toggleState]: !this.state[toggleState]
     });
-  }
+  };
 
   toggleMonitorState = (event) => {
     let monitorName = event.target.name;  // matches the name set for monitor switch
     let monitorChecked = this.state[monitorName];
     this.setState({
       [monitorName]: !monitorChecked
-    })
-  }
+    });
+  };
 
   /* Handle most common, array, and nested input state value changes
     TODO: add more logic if needed
@@ -273,7 +273,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
         this.setState({ [name]: newValue });
       }
     }
-  }
+  };
 
   /*
     Append a new input field in the end of this form group
@@ -303,7 +303,7 @@ export default class GenerateTestConfigurationForm extends React.Component {
       // single state appending
       this.setState({ [name]: [...this.state[name], appendObj ? appendObj : ""] });
     }
-  }
+  };
 
   /* Removing the last input field in this form group
     TODO: add more logic if needed
@@ -339,13 +339,13 @@ export default class GenerateTestConfigurationForm extends React.Component {
       this.state[name].pop();
       this.setState({ [name]: this.state[name] });
     }
-  }
+  };
 
   // Display the "Copied" keyword sign to user
   copyFile = () => {
     this.setState({copied: true});
     setInterval(() => { this.setState({copied: false}) }, 5000);
-  }
+  };
 
   // Dismiss alert
   onDismiss = () => {

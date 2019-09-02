@@ -15,7 +15,6 @@
     "yargs": "10.0.3"
   },
   "scripts": {
-    "start": "",
     "client": "(cd gui-client/caliper-gui-dashboard && npm start)",
     "server": "(cd gui-server/caliper-api && npm start)",
     "test": "echo \"Error: no test specified\" && exit 1"
