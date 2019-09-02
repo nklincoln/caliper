@@ -2,7 +2,10 @@
 
 ## Get Started
 
-In the `caliper-gui` directory run `npm start`.
+Open two terminal windows:
+
+1. Change both terminals into `caliper-gui` directory, and then run `npm run server` and `npm run client` in two directories respectively.
+2. If using MongDB or some other databases, pleaes make sure the DB are installed and connected.
 
 ## Caliper Server
 The server provides an API that supports the configuration files and testing result data transmission between Caliper GUI and Caliper-core modules.
