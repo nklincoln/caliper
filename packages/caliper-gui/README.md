@@ -1,4 +1,5 @@
-# Caliper GUI
+# Hyperledger Caliper GUI 
+![caliper-log](./resources/caliper-logo.png)
 
 ## Get Started
 
