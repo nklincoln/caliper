@@ -57,17 +57,6 @@ class FixedPlugin extends Component {
           <ul className="dropdown-menu show">
             <li className="button-container">
               <Button
-                href="https://github.com/Jasonyou1995/caliper-gui-dashboard"
-                target="_blank"
-                color="primary"
-                block
-                className="btn-round"
-              >
-                <i className="fab fa-github"></i> Download Source 
-              </Button>
-            </li>
-            <li className="button-container">
-              <Button
                 href="/admin/configuration"
                 color="default"
                 block
