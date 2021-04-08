@@ -24,7 +24,10 @@ steps:
     SonarCloud: 'CaliperSonarCloud'
     organization: 'nklincoln-github'
     scannerMode: 'CLI'
-    configMode: 'file'
+    configMode: 'manual'
+    cliProjectKey: 'nklincoln_caliper-1'
+    cliProjectName: 'caliper'
+    cliSources: '.'
 
 - script: |
     npm run bootstrap
