@@ -27,7 +27,7 @@ steps:
     configMode: 'file'
 
 - script: |
-    npm run build
+    npm run bootstrap
   displayName: 'npm build'
 
 - task: SonarCloudAnalyze@1
